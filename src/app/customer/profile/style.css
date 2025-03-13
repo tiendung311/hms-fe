@@ -1,0 +1,81 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.body {
+  display: flex;
+  justify-content: space-between;
+  margin: 50px 0;
+}
+
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  font-family: "Inknut Antiqua";
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  margin: 0 10px;
+}
+
+.info:first-child {
+  margin-top: 10px;
+}
+
+label {
+  font-weight: 600;
+  width: 120px;
+}
+
+input {
+  background-color: #fff;
+  border: 2px solid var(--main-yellow);
+  border-radius: 20px;
+  padding: 10px;
+  width: 380px;
+}
+
+.password-group label {
+  width: 200px;
+}
+
+.password-group h1 {
+  text-align: center;
+}
+
+#saveBtn,
+#cancelBtn {
+  padding: 10px 20px;
+  border-radius: 10px;
+}
+
+.btn-group {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+#saveBtn {
+  margin-right: 10px;
+  width: 200px;
+}
+
+#cancelBtn {
+  width: 60px;
+}
