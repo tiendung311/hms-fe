@@ -1,0 +1,105 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+}
+
+.container {
+  background-image: url("/assets/login-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.form,
+input,
+button {
+  border-radius: 30px;
+}
+
+.form {
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.input-group {
+  position: relative;
+  margin: 15px 0;
+}
+
+input {
+  background-color: transparent;
+  padding: 10px 40px 10px 10px;
+  border: 1px solid #fff;
+  color: #fff;
+  padding: 10px;
+  width: 279px;
+}
+
+.icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;
+}
+
+.input-group label {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+  transition: all 0.3s ease-in-out;
+  pointer-events: none;
+  padding: 0 5px;
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+  top: -10px;
+  left: 10px;
+  font-size: 14px;
+  color: #fff;
+}
+
+.function {
+  display: flex;
+  justify-content: space-between;
+  width: 300px;
+  margin: 15px 0;
+}
+
+.function a {
+  color: #fff;
+  font-weight: 500;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-login {
+  border: 1px solid var(--main-yellow);
+  color: var(--main-yellow);
+  background-color: transparent;
+  width: 300px;
+  margin: 30px 0;
+  padding: 10px;
+  transition: all 0.3s ease-in-out;
+  font-weight: 600;
+}
+
+.btn-login:hover {
+  background-color: var(--main-yellow);
+  color: black;
+}
