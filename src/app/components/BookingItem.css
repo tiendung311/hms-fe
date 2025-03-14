@@ -1,0 +1,36 @@
+.booking-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 10px;
+}
+
+.booking-item:hover,
+.noti:hover {
+  background-color: #fffefe;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.info {
+  display: flex;
+  align-items: baseline;
+}
+
+.info .icon {
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-right: 30px;
+}
+
+p {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.noti {
+  color: var(--main-grey);
+  font-size: 1.4rem;
+  font-style: italic;
+  margin: 30px 0;
+  text-align: center;
+}

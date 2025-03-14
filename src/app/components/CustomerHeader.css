@@ -16,6 +16,7 @@
 #dropdown-basic {
   width: 180px !important;
   text-align: left;
+  height: 40px;
 }
 
 #dropdown-basic::after {
