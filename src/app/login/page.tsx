@@ -18,11 +18,7 @@ export default function Login() {
             height={50}
             priority
           />
-          <h2
-            style={{ fontFamily: "Inknut Antiqua", color: "white", margin: 0 }}
-          >
-            Hôtel
-          </h2>
+          <h1 style={{ color: "white", marginTop: "10px" }}>Hôtel</h1>
         </div>
         <div className="input-group">
           <input type="text" id="email" placeholder=" " />

@@ -1,5 +1,6 @@
 "use client";
 
+import "bootstrap/dist/css/bootstrap.min.css";
 import CustomerHeader from "@/app/components/CustomerHeader";
 import { Button, Container } from "react-bootstrap";
 import "./style.css";

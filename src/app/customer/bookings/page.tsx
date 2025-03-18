@@ -1,5 +1,6 @@
 "use client";
 
+import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
 import CustomerHeader from "@/app/components/CustomerHeader";
 import { Container } from "react-bootstrap";
@@ -48,6 +49,16 @@ const bookings = [
     checkIn: "12:00 20/02/2025",
     checkOut: "12:00 21/02/2025",
     price: 3000000,
+  },
+  {
+    id: 4,
+    roomType: "Phòng đôi - 3 sao",
+    roomNumber: "404",
+    amenities: ["WiFi", "Điều hòa", "Tivi"],
+    status: "Nhận phòng",
+    checkIn: "12:00 15/03/2025",
+    checkOut: "12:00 17/03/2025",
+    price: 4000000,
   },
 ];
 

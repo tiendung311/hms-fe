@@ -2,6 +2,9 @@
   margin: 30px 0;
   display: flex;
   justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
 }
 
 .logo-group {

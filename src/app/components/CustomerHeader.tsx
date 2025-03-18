@@ -1,5 +1,6 @@
 "use client";
 
+import "bootstrap/dist/css/bootstrap.min.css";
 import Image from "next/image";
 import "./CustomerHeader.css";
 import { Dropdown } from "react-bootstrap";
@@ -23,7 +24,6 @@ export default function CustomerHeader() {
         />
         <h1
           style={{
-            fontFamily: "Inknut Antiqua",
             color: "var(--main-yellow)",
             marginLeft: "20px",
           }}
