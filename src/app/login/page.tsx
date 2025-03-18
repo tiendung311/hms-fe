@@ -3,10 +3,13 @@
 import "./style.css";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLock, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faUser } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function Login() {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className="container">
       <div className="form" style={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}>
@@ -21,7 +24,7 @@ export default function Login() {
           <h1 style={{ color: "white", marginTop: "10px" }}>Hôtel</h1>
         </div>
         <div className="input-group">
-          <input type="text" id="email" placeholder=" " />
+          <input type="text" id="email" placeholder=" " autoComplete="off" />
           <label htmlFor="email">Gmail/Số điện thoại</label>
           <FontAwesomeIcon
             className="icon"
@@ -30,12 +33,17 @@ export default function Login() {
           />
         </div>
         <div className="input-group">
-          <input type="password" id="password" placeholder=" " />
+          <input
+            type={showPassword ? "text" : "password"}
+            id="password"
+            placeholder=" "
+          />
           <label htmlFor="password">Mật khẩu</label>
           <FontAwesomeIcon
             className="icon"
-            icon={faLock}
-            style={{ color: "#fff" }}
+            icon={showPassword ? faEye : faEyeSlash}
+            style={{ color: "#fff", cursor: "pointer" }}
+            onClick={() => setShowPassword(!showPassword)}
           />
         </div>
         <div className="function">
