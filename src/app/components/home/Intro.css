@@ -1,0 +1,30 @@
+.intro-container {
+  background-image: url("/assets/intro-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 400px;
+  width: 100%;
+}
+
+.background {
+  background-color: rgba(0, 0, 0, 0.5);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  outline: none;
+}
+
+.intro-container,
+.background {
+  border-radius: 20px;
+}
+
+p {
+  font-size: 1.2rem;
+  margin: 0;
+}

@@ -1,0 +1,32 @@
+.room-container {
+  margin: 30px auto;
+}
+
+.room-list {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px 0;
+  scrollbar-width: none;
+}
+
+.room-card {
+  flex: 0 0 auto;
+  width: 330px;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  background: white;
+  text-align: left;
+  font-size: 0.8rem;
+}
+
+.room-card:hover {
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
+}
+
+.room-image {
+  border-radius: 10px;
+}

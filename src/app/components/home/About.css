@@ -1,0 +1,30 @@
+.about-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--main-grey);
+  margin-top: 30px;
+  padding: 40px;
+}
+
+.content {
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-container,
+.content {
+  border-radius: 20px;
+}
+
+.carousels {
+  margin-top: 30px;
+}

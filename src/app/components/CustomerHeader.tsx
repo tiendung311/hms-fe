@@ -7,6 +7,7 @@ import { Dropdown } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,
+  faCaretDown,
   faIdCard,
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
@@ -39,6 +40,7 @@ export default function CustomerHeader() {
           style={{ color: "white" }}
         >
           Nguyễn Văn A
+          <FontAwesomeIcon className="icon" icon={faCaretDown} />
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
