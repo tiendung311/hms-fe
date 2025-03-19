@@ -1,7 +1,7 @@
 "use client";
 
-import "bootstrap/dist/css/bootstrap.min.css";
 import Image from "next/image";
+import Link from "next/link";
 import "./CustomerHeader.css";
 import { Dropdown } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,7 +15,11 @@ import {
 export default function CustomerHeader() {
   return (
     <div className="header">
-      <div className="logo-group">
+      <Link
+        href="/home"
+        className="logo-group"
+        style={{ cursor: "pointer", textDecoration: "none" }}
+      >
         <Image
           src="/assets/logo-H.png"
           alt="Logo"
@@ -27,11 +31,12 @@ export default function CustomerHeader() {
           style={{
             color: "var(--main-yellow)",
             marginLeft: "20px",
+            fontSize: "2.8rem",
           }}
         >
           Hôtel
         </h1>
-      </div>
+      </Link>
 
       <Dropdown className="dropdown">
         <Dropdown.Toggle
@@ -44,18 +49,18 @@ export default function CustomerHeader() {
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
-          <Dropdown.Item href="#">
+          <Link className="dropdown-item" href="/customer/profile">
             Hồ sơ
             <FontAwesomeIcon className="icon" icon={faIdCard} />
-          </Dropdown.Item>
-          <Dropdown.Item href="#">
+          </Link>
+          <Link className="dropdown-item" href="/customer/bookings">
             Hoạt động
             <FontAwesomeIcon className="icon" icon={faBell} />
-          </Dropdown.Item>
-          <Dropdown.Item href="#">
+          </Link>
+          <Link className="dropdown-item" href="/login">
             Đăng xuất
             <FontAwesomeIcon className="icon" icon={faRightFromBracket} />
-          </Dropdown.Item>
+          </Link>
         </Dropdown.Menu>
       </Dropdown>
     </div>

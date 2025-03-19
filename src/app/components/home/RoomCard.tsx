@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faStar } from "@fortawesome/free-solid-svg-icons";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 
 interface RoomCardProps {
   image: string;
@@ -19,6 +21,14 @@ export default function RoomCard({
   amenities,
   price,
 }: RoomCardProps) {
+  const maxAmenitiesLength = 25;
+  const amenitiesText = amenities.join(", ");
+
+  const displayedAmenities =
+    amenitiesText.length > maxAmenitiesLength
+      ? amenitiesText.substring(0, maxAmenitiesLength) + "..."
+      : amenitiesText;
+
   return (
     <div className="room-card">
       <Image
@@ -38,8 +48,15 @@ export default function RoomCard({
           <FontAwesomeIcon key={i} icon={faStar} style={{ color: "gold" }} />
         ))}
       </p>
-      <p>Tiện ích: {amenities.join(", ")}</p>
-      <p>Giá: {price.toLocaleString("vi-VN")} VND</p>
+
+      <OverlayTrigger
+        placement="top"
+        overlay={<Tooltip id="tooltip-top">{amenitiesText}</Tooltip>}
+      >
+        <p style={{ cursor: "pointer" }}>Tiện ích: {displayedAmenities}</p>
+      </OverlayTrigger>
+
+      <p className="price">{price.toLocaleString("vi-VN")} VND/ngày</p>
     </div>
   );
 }

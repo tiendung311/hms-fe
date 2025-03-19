@@ -13,11 +13,11 @@
 
 .info {
   display: flex;
-  align-items: baseline;
+  align-items: baseline !important;
 }
 
 .info .icon {
-  font-size: 1.2rem;
+  font-size: 1.4rem !important;
   cursor: pointer;
   margin-right: 30px;
 }

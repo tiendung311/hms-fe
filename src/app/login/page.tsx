@@ -1,5 +1,6 @@
 "use client";
 
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,7 +12,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="container">
+    <div className="login-container">
       <div className="form" style={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}>
         <div className="logo-group">
           <Image
@@ -23,16 +24,16 @@ export default function Login() {
           />
           <h1 style={{ color: "white", marginTop: "10px" }}>Hôtel</h1>
         </div>
-        <div className="input-group">
+        <div className="input-groups">
           <input type="text" id="email" placeholder=" " autoComplete="off" />
-          <label htmlFor="email">Gmail/Số điện thoại</label>
+          <label htmlFor="email">Gmail</label>
           <FontAwesomeIcon
             className="icon"
             icon={faUser}
             style={{ color: "#fff" }}
           />
         </div>
-        <div className="input-group">
+        <div className="input-groups">
           <input
             type={showPassword ? "text" : "password"}
             id="password"

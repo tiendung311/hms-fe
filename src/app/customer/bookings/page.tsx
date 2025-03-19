@@ -1,6 +1,5 @@
 "use client";
 
-import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
 import CustomerHeader from "@/app/components/CustomerHeader";
 import { Container } from "react-bootstrap";

@@ -29,4 +29,14 @@
 
 .room-image {
   border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.price {
+  width: 190px;
+  margin-top: 15px !important;
+  background-color: var(--main-green);
+  border-radius: 10px;
+  color: white;
+  padding: 10px;
 }

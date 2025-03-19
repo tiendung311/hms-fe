@@ -1,4 +1,3 @@
-import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -83,7 +82,7 @@ export default function BookingDetail({ booking, onBack }: BookingDetailProps) {
             {booking.status}
           </p>
         </div>
-        <div className="btn-group">
+        <div className="btn-group" style={{ marginBottom: "20px" }}>
           {showRating && (
             <RatingOverlay
               onClose={() => setShowRating(false)}

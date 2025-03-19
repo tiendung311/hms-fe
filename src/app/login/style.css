@@ -1,4 +1,4 @@
-.container {
+.login-container {
   background-image: url("/assets/login-bg.jpg");
   background-size: cover;
   background-position: center;
@@ -29,7 +29,8 @@ button {
   align-items: center;
 }
 
-.input-group {
+.input-groups {
+  width: 330px;
   position: relative;
   margin: 15px 0;
 }
@@ -39,7 +40,7 @@ input {
   padding: 10px 40px 10px 10px;
   border: 1px solid #fff;
   color: #fff;
-  width: 279px;
+  width: 100%;
 }
 
 .icon {
@@ -50,7 +51,7 @@ input {
   color: #fff;
 }
 
-.input-group label {
+.input-groups label {
   position: absolute;
   left: 10px;
   top: 50%;
@@ -61,8 +62,8 @@ input {
   padding: 0 5px;
 }
 
-.input-group input:focus + label,
-.input-group input:not(:placeholder-shown) + label {
+.input-groups input:focus + label,
+.input-groups input:not(:placeholder-shown) + label {
   top: -10px;
   left: 10px;
   font-size: 14px;

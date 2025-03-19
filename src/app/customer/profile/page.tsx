@@ -1,11 +1,11 @@
 "use client";
 
-import "bootstrap/dist/css/bootstrap.min.css";
 import CustomerHeader from "@/app/components/CustomerHeader";
 import { Button, Container } from "react-bootstrap";
 import "./style.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import Link from "next/link";
 
 export default function Profile() {
   return (
@@ -52,9 +52,13 @@ export default function Profile() {
           <Button id="saveBtn" variant="warning" style={{ color: "white" }}>
             Lưu thay đổi
           </Button>
-          <Button id="cancelBtn" variant="secondary" style={{ color: "white" }}>
-            <FontAwesomeIcon icon={faRotateLeft} />
-          </Button>
+          <Link href="/home" id="cancelBtn" className="btn btn-secondary">
+            <FontAwesomeIcon
+              icon={faArrowLeft}
+              style={{ marginRight: "10px" }}
+            />
+            Quay lại
+          </Link>
         </div>
       </div>
     </Container>
