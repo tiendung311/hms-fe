@@ -4,8 +4,8 @@ import { useState } from "react";
 import CustomerHeader from "@/app/components/CustomerHeader";
 import { Container } from "react-bootstrap";
 import "./style.css";
-import BookingItem from "@/app/components/BookingItem";
-import BookingDetail from "@/app/components/BookingDetail";
+import BookingItem from "@/app/components/bookings/BookingItem";
+import BookingDetail from "@/app/components/bookings/BookingDetail";
 
 type Booking = {
   id: number;
