@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import "./CustomerHeader.css";
@@ -7,6 +5,7 @@ import { Dropdown } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,
+  faCalendarPlus,
   faCaretDown,
   faIdCard,
   faRightFromBracket,
@@ -53,9 +52,13 @@ export default function CustomerHeader() {
             Hồ sơ
             <FontAwesomeIcon className="icon" icon={faIdCard} />
           </Link>
-          <Link className="dropdown-item" href="/customer/bookings">
+          <Link className="dropdown-item" href="/customer/activity">
             Hoạt động
             <FontAwesomeIcon className="icon" icon={faBell} />
+          </Link>
+          <Link className="dropdown-item" href="/customer/booking">
+            Đặt phòng
+            <FontAwesomeIcon className="icon" icon={faCalendarPlus} />
           </Link>
           <Link className="dropdown-item" href="/login">
             Đăng xuất

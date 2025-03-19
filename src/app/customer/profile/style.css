@@ -8,6 +8,12 @@
   display: flex;
   justify-content: space-between;
   margin: 50px 0;
+  width: 100%;
+}
+
+.profile,
+.password-group {
+  width: 50%;
 }
 
 .profile {
@@ -24,6 +30,7 @@
 .details {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .info {
@@ -39,7 +46,7 @@
 
 label {
   font-weight: 600;
-  width: 120px;
+  width: 160px;
 }
 
 input {
@@ -47,11 +54,11 @@ input {
   border: 2px solid var(--main-yellow);
   border-radius: 20px;
   padding: 10px;
-  width: 380px;
+  width: 100% !important;
 }
 
 .password-group label {
-  width: 200px;
+  width: 280px;
 }
 
 .password-group h1 {

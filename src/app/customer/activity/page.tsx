@@ -61,7 +61,7 @@ const bookings = [
   },
 ];
 
-export default function Bookings() {
+export default function Activity() {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   const handleSelectBooking = (booking: Booking) => {

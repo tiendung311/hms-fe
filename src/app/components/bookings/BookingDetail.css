@@ -24,7 +24,7 @@ p {
 }
 
 .label {
-  font-weight: 500;
+  font-weight: 500 !important;
   width: 300px;
   text-decoration: underline;
 }
