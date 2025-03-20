@@ -1,25 +1,26 @@
-.booking-container {
+.bookingContainer {
   display: flex;
   justify-content: space-between;
   gap: 20px;
   width: 100%;
 }
 
-.booking-detail {
+.bookingDetail {
   width: 60%;
 }
 
-h1 {
+.heading {
   font-size: 2.4rem;
   margin-bottom: 20px;
 }
 
 .info {
   display: flex;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
-p {
+/* Thêm class riêng thay vì dùng thẻ p */
+.text {
   font-size: 1.6rem;
 }
 
@@ -33,18 +34,23 @@ p {
   padding: 10px;
   border-radius: 10px;
   font-size: 1.4rem;
+  font-weight: 600 !important;
 }
 
-.btn-group {
+.bookingRating {
+  flex: 1;
+}
+
+.btnGroup {
   margin-top: 10px;
   width: 400px;
 }
 
-.btn-group button {
-  padding: 10px;
+.btnGroup button {
+  padding: 10px 15px;
   color: white;
   font-weight: 600;
   cursor: pointer;
-  margin-right: 10px;
+  margin: 20px 10px 0 0;
   border-radius: 10px !important;
 }

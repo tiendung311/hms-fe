@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle, faClock } from "@fortawesome/free-solid-svg-icons";
-import "./BookingActivity.css";
+import styles from "./BookingActivity.module.css";
 
 // Hàm lấy màu theo trạng thái
 const getStatusColor = (status: string) => {
@@ -37,17 +37,17 @@ export default function BookingActivity({
   const type = getBookingType(status);
 
   return (
-    <div className="booking-item" onClick={onClick}>
-      <div className="info">
+    <div className={styles.bookingItem} onClick={onClick}>
+      <div className={styles.info}>
         <FontAwesomeIcon
-          className="icon"
+          className={styles.icon}
           icon={type === "current" ? faCircle : faClock}
           style={{ color: getStatusColor(status) }}
         />
-        <div className="booking-info">
+        <div className={styles.bookingInfo}>
           <h3>{roomType}</h3>
-          <p>Trạng thái: {status}</p>
-          <p>{time}</p>
+          <p className={styles.bookingText}>Trạng thái: {status}</p>
+          <p className={styles.bookingText}>{time}</p>
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import CustomerHeader from "@/app/components/CustomerHeader";
 import { Container } from "react-bootstrap";
-import "./style.css";
+import styles from "./page.module.css";
 import BookingActivity from "@/app/components/customer/bookings/BookingActivity";
 import BookingDetail from "@/app/components/customer/bookings/BookingDetail";
 
@@ -79,7 +79,7 @@ export default function Activity() {
         />
       ) : (
         <>
-          <h1>Hoạt động</h1>
+          <h1 className={styles.heading}>Hoạt động</h1>
           {bookings.some(({ status }) =>
             ["Chờ", "Xác nhận", "Nhận phòng"].includes(status)
           ) ? (
@@ -97,10 +97,10 @@ export default function Activity() {
                 />
               ))
           ) : (
-            <p className="noti">Không có hoạt động hiện tại</p>
+            <p className={styles.noti}>Không có hoạt động hiện tại</p>
           )}
 
-          <h1>Gần đây</h1>
+          <h1 className={styles.heading}>Gần đây</h1>
           {bookings.some(({ status }) =>
             ["Trả phòng", "Hủy phòng"].includes(status)
           ) ? (
@@ -118,7 +118,7 @@ export default function Activity() {
                 />
               ))
           ) : (
-            <p className="noti">Không có hoạt động nào gần đây</p>
+            <p className={styles.noti}>Không có hoạt động nào gần đây</p>
           )}
         </>
       )}

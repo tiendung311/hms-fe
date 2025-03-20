@@ -1,12 +1,15 @@
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import "./BookingDetail.css";
+import styles from "./BookingDetail.module.css";
 import { useState } from "react";
 import RatingOverlay from "./RatingOverlay";
 
 const getStatusStyle = (status: string) => {
-  const styles: Record<string, { color: string; backgroundColor: string }> = {
+  const statusStyles: Record<
+    string,
+    { color: string; backgroundColor: string }
+  > = {
     Chờ: { color: "white", backgroundColor: "var(--main-yellow)" },
     "Xác nhận": { color: "white", backgroundColor: "var(--main-green)" },
     "Nhận phòng": { color: "white", backgroundColor: "var(--main-blue)" },
@@ -14,7 +17,10 @@ const getStatusStyle = (status: string) => {
     "Hủy phòng": { color: "white", backgroundColor: "var(--main-red)" },
   };
   return (
-    styles[status] || { color: "white", backgroundColor: "var(--main-grey)" }
+    statusStyles[status] || {
+      color: "white",
+      backgroundColor: "var(--main-grey)",
+    }
   );
 };
 
@@ -41,21 +47,21 @@ export default function BookingDetail({ booking, onBack }: BookingDetailProps) {
   const isReviewable = booking.status === "Trả phòng";
 
   return (
-    <div className="booking-container">
+    <div className={styles.bookingContainer}>
       {/* Thông tin đặt phòng */}
-      <div className="booking-detail">
-        <h1>Chi tiết đặt phòng</h1>
-        <div className="info">
-          <p className="label">Loại phòng:</p>
-          <p>{booking.roomType}</p>
+      <div className={styles.bookingDetail}>
+        <h1 className={styles.heading}>Chi tiết đặt phòng</h1>
+        <div className={styles.info}>
+          <p className={styles.label}>Loại phòng:</p>
+          <p className={styles.text}>{booking.roomType}</p>
         </div>
-        <div className="info">
-          <p className="label">Số phòng:</p>
-          <p>{booking.roomNumber}</p>
+        <div className={styles.info}>
+          <p className={styles.label}>Số phòng:</p>
+          <p className={styles.text}>{booking.roomNumber}</p>
         </div>
-        <div className="info">
-          <p className="label">Tiện ích:</p>
-          <p>
+        <div className={styles.info}>
+          <p className={styles.label}>Tiện ích:</p>
+          <p className={styles.text}>
             {booking.amenities.map((amenity, index) => (
               <span key={index}>
                 {amenity}
@@ -64,25 +70,27 @@ export default function BookingDetail({ booking, onBack }: BookingDetailProps) {
             ))}
           </p>
         </div>
-        <div className="info">
-          <p className="label">Giờ nhận phòng:</p>
-          <p>{booking.checkIn}</p>
+        <div className={styles.info}>
+          <p className={styles.label}>Giờ nhận phòng:</p>
+          <p className={styles.text}>{booking.checkIn}</p>
         </div>
-        <div className="info">
-          <p className="label">Giờ trả phòng:</p>
-          <p>{booking.checkOut}</p>
+        <div className={styles.info}>
+          <p className={styles.label}>Giờ trả phòng:</p>
+          <p className={styles.text}>{booking.checkOut}</p>
         </div>
-        <div className="info">
-          <p className="label">Giá:</p>
-          <p>{booking.price.toLocaleString("vi-VN")} VND</p>
+        <div className={styles.info}>
+          <p className={styles.label}>Giá:</p>
+          <p className={styles.text}>
+            {booking.price.toLocaleString("vi-VN")} VND
+          </p>
         </div>
-        <div className="info">
-          <p className="label">Trạng thái:</p>
-          <p className="status" style={getStatusStyle(booking.status)}>
+        <div className={styles.info}>
+          <p className={styles.label}>Trạng thái:</p>
+          <p className={styles.status} style={getStatusStyle(booking.status)}>
             {booking.status}
           </p>
         </div>
-        <div className="btn-group" style={{ marginBottom: "20px" }}>
+        <div className={styles.btnGroup} style={{ marginBottom: "20px" }}>
           {showRating && (
             <RatingOverlay
               onClose={() => setShowRating(false)}
@@ -112,17 +120,17 @@ export default function BookingDetail({ booking, onBack }: BookingDetailProps) {
       </div>
 
       {/* Đánh giá phòng */}
-      <div className="booking-rating">
+      <div className={styles.bookingRating}>
         {ratingData ? (
-          <div className="review-info">
-            <h1>Feedback của bạn</h1>
-            <div className="info">
-              <p className="label">Đánh giá:</p>
-              <p>{ratingData.rating} ⭐</p>
+          <div className={styles.reviewInfo}>
+            <h1 className={styles.heading}>Feedback của bạn</h1>
+            <div className={styles.info}>
+              <p className={styles.label}>Đánh giá:</p>
+              <p className={styles.text}>{ratingData.rating} ⭐</p>
             </div>
-            <div className="info">
-              <p className="label">Nhận xét:</p>
-              <p>{ratingData.comment}</p>
+            <div className={styles.info}>
+              <p className={styles.label}>Nhận xét:</p>
+              <p className={styles.text}>{ratingData.comment}</p>
             </div>
           </div>
         ) : null}

@@ -56,7 +56,7 @@ export default function RoomCard({
         <p style={{ cursor: "pointer" }}>Tiện ích: {displayedAmenities}</p>
       </OverlayTrigger>
 
-      <p className="price">{price.toLocaleString("vi-VN")} VND/ngày</p>
+      <p className="price">{price.toLocaleString("vi-VN")}₫ /đêm</p>
     </div>
   );
 }

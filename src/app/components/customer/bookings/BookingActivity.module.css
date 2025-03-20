@@ -1,11 +1,12 @@
-.booking-item {
+/* BookingActivity.module.css */
+.bookingItem {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
   padding: 10px;
 }
 
-.booking-item:hover,
+.bookingItem:hover,
 .noti:hover {
   background-color: #fffefe;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -16,13 +17,13 @@
   align-items: baseline !important;
 }
 
-.info .icon {
-  font-size: 1.4rem !important;
+.icon {
+  font-size: 1.2rem !important;
   cursor: pointer;
   margin-right: 30px;
 }
 
-p {
+.bookingText {
   font-size: 1.2rem;
   margin: 0;
 }
