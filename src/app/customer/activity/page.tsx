@@ -4,8 +4,8 @@ import { useState } from "react";
 import CustomerHeader from "@/app/components/CustomerHeader";
 import { Container } from "react-bootstrap";
 import "./style.css";
-import BookingItem from "@/app/components/bookings/BookingItem";
-import BookingDetail from "@/app/components/bookings/BookingDetail";
+import BookingActivity from "@/app/components/customer/bookings/BookingActivity";
+import BookingDetail from "@/app/components/customer/bookings/BookingDetail";
 
 type Booking = {
   id: number;
@@ -88,7 +88,7 @@ export default function Activity() {
                 ["Chờ", "Xác nhận", "Nhận phòng"].includes(status)
               )
               .map((booking) => (
-                <BookingItem
+                <BookingActivity
                   key={booking.id}
                   roomType={booking.roomType}
                   status={booking.status}
@@ -109,7 +109,7 @@ export default function Activity() {
                 ["Trả phòng", "Hủy phòng"].includes(status)
               )
               .map((booking) => (
-                <BookingItem
+                <BookingActivity
                   key={booking.id}
                   roomType={booking.roomType}
                   status={booking.status}

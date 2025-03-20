@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircle, faClock } from "@fortawesome/free-solid-svg-icons";
-import "./BookingItem.css";
+import "./BookingActivity.css";
 
 // Hàm lấy màu theo trạng thái
 const getStatusColor = (status: string) => {
@@ -28,7 +28,7 @@ type BookingItemProps = {
   onClick?: () => void;
 };
 
-export default function BookingItem({
+export default function BookingActivity({
   roomType,
   status,
   time,
