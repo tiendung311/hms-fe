@@ -1,8 +1,8 @@
-.room-container {
+.roomContainer {
   margin: 30px auto;
 }
 
-.room-list {
+.roomList {
   display: flex;
   gap: 20px;
   overflow-x: auto;
@@ -11,7 +11,7 @@
   scrollbar-width: none;
 }
 
-.room-card {
+.roomCard {
   display: flex;
   flex-direction: column;
   width: 330px;
@@ -24,12 +24,12 @@
   cursor: pointer;
 }
 
-.room-card:hover {
+.roomCard:hover {
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
   transform: translateY(-5px);
 }
 
-.room-image {
+.roomImage {
   border-radius: 10px;
   margin-bottom: 10px;
 }

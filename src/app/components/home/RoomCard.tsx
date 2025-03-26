@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faStar } from "@fortawesome/free-solid-svg-icons";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
+import styles from "./ShowRoom.module.css";
 
 interface RoomCardProps {
   image: string;
@@ -30,13 +31,13 @@ export default function RoomCard({
       : amenitiesText;
 
   return (
-    <div className="room-card">
+    <div className={styles.roomCard}>
       <Image
         src={image}
         alt={name}
         width={300}
         height={200}
-        className="room-image"
+        className={styles.roomImage}
       />
       <p>
         Phòng: <FontAwesomeIcon icon={faUser} style={{ marginRight: "5px" }} />
@@ -56,7 +57,7 @@ export default function RoomCard({
         <p style={{ cursor: "pointer" }}>Tiện ích: {displayedAmenities}</p>
       </OverlayTrigger>
 
-      <p className="price">{price.toLocaleString("vi-VN")}₫ /đêm</p>
+      <p className={styles.price}>{price.toLocaleString("vi-VN")}₫ /đêm</p>
     </div>
   );
 }

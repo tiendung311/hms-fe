@@ -1,5 +1,5 @@
 import RoomCard from "./RoomCard";
-import "./ShowRoom.css";
+import styles from "./ShowRoom.module.css";
 
 const rooms = [
   {
@@ -61,8 +61,8 @@ const rooms = [
 
 export default function ShowRoom() {
   return (
-    <div className="room-container">
-      <div className="room-list">
+    <div className={styles.roomContainer}>
+      <div className={styles.roomList}>
         {rooms.map((room, index) => (
           <RoomCard key={index} {...room} />
         ))}

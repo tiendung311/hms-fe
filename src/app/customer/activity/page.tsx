@@ -3,7 +3,7 @@
 import { useState } from "react";
 import CustomerHeader from "@/app/components/CustomerHeader";
 import { Container } from "react-bootstrap";
-import styles from "./page.module.css";
+import styles from "./style.module.css";
 import BookingActivity from "@/app/components/customer/bookings/BookingActivity";
 import BookingDetail from "@/app/components/customer/bookings/BookingDetail";
 

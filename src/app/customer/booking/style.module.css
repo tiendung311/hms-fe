@@ -1,4 +1,4 @@
-.booking-container {
+.bookingContainer {
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -17,11 +17,11 @@
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.filter-group {
+.filterGroup {
   margin-bottom: 20px;
 }
 
-.filter-item {
+.filterItem {
   background: var(--main-grey);
   padding: 10px;
   border-radius: 8px;
@@ -31,8 +31,8 @@
   transition: background 0.3s ease;
 }
 
-.filter-item:hover,
-.filter-item.active {
+.filterItem:hover,
+.filterItemActive {
   background: var(--main-grey-dark);
 }
 
@@ -41,24 +41,24 @@
   max-width: 100%;
 }
 
-.search-bar,
-.result-box {
+.searchBar,
+.resultBox {
   width: 100%;
 }
 
-.search-bar {
+.searchBar {
   display: flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 20px;
 }
 
-.input-groups {
+.inputGroups {
   position: relative;
   width: 100%;
 }
 
-input {
+.input {
   width: 100% !important;
   padding: 10px;
   border: 1px solid var(--main-yellow);
@@ -66,7 +66,7 @@ input {
   background-color: white;
 }
 
-.input-groups label {
+.inputGroups label {
   position: absolute;
   left: 10px;
   top: 50%;
@@ -77,23 +77,23 @@ input {
   padding: 0 5px;
 }
 
-.input-groups input:focus + label,
-.input-groups input:not(:placeholder-shown) + label {
+.inputGroups input:focus + label,
+.inputGroups input:not(:placeholder-shown) + label {
   top: -10px;
   font-size: 16px;
   width: 100%;
   color: var(--main-yellow);
 }
 
-.search-bar button {
+.searchBar button {
   padding: 10px 20px;
 }
 
-#search-btn:hover {
+#searchBtn:hover {
   color: white !important;
 }
 
-.result-box {
+.resultBox {
   padding: 20px;
   background: #fff;
   border-radius: 10px;
@@ -101,7 +101,7 @@ input {
   min-height: 200px;
 }
 
-.price-slider {
+.priceSlider {
   position: relative;
   height: 40px;
   display: flex;
@@ -109,7 +109,7 @@ input {
   justify-content: center;
 }
 
-.price-slider input {
+.priceSlider input {
   position: absolute;
   width: 100%;
   appearance: none;
@@ -118,13 +118,13 @@ input {
   border: none;
 }
 
-.price-slider input::-webkit-slider-runnable-track {
+.priceSlider input::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
   background: #003366;
 }
 
-.price-slider input::-webkit-slider-thumb {
+.priceSlider input::-webkit-slider-thumb {
   appearance: none;
   width: 16px;
   height: 16px;
@@ -135,7 +135,7 @@ input {
   cursor: pointer;
 }
 
-.price-slider input::-moz-range-thumb {
+.priceSlider input::-moz-range-thumb {
   width: 16px;
   height: 16px;
   background: #003366;

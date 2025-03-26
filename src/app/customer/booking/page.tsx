@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button, Container } from "react-bootstrap";
-import "./style.css";
+import styles from "./style.module.css";
 import CustomerHeader from "@/app/components/CustomerHeader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateLeft, faSearch } from "@fortawesome/free-solid-svg-icons";
@@ -14,6 +14,7 @@ export default function Booking() {
   const [minPrice, setMinPrice] = useState(500000);
   const [maxPrice, setMaxPrice] = useState(5000000);
   const [isClient, setIsClient] = useState(false);
+  const today = new Date().toISOString().split("T")[0];
 
   const rooms = [
     {
@@ -71,21 +72,21 @@ export default function Booking() {
   return (
     <Container>
       <CustomerHeader />
-      <div className="booking-container">
-        <div className="sidebar">
-          <div className="filter-group">
+      <div className={styles.bookingContainer}>
+        <div className={styles.sidebar}>
+          <div className={styles.filterGroup}>
             <h4>Loại phòng:</h4>
             <div
-              className={`filter-item ${
-                selectedRoom === "single" ? "active" : ""
+              className={`${styles.filterItem} ${
+                selectedRoom === "single" ? styles.filterItemActive : ""
               }`}
               onClick={() => toggleRoom("single")}
             >
               <span>Phòng đơn</span>
             </div>
             <div
-              className={`filter-item ${
-                selectedRoom === "double" ? "active" : ""
+              className={`${styles.filterItem} ${
+                selectedRoom === "double" ? styles.filterItemActive : ""
               }`}
               onClick={() => toggleRoom("double")}
             >
@@ -93,13 +94,13 @@ export default function Booking() {
             </div>
           </div>
 
-          <div className="filter-group">
+          <div className={styles.filterGroup}>
             <h4>Số sao:</h4>
             {[3, 4, 5].map((star) => (
               <div
                 key={star}
-                className={`filter-item ${
-                  selectedStar === star ? "active" : ""
+                className={`${styles.filterItem} ${
+                  selectedStar === star ? styles.filterItemActive : ""
                 }`}
                 onClick={() => toggleStar(star)}
               >
@@ -109,15 +110,16 @@ export default function Booking() {
           </div>
 
           {isClient && ( // Đảm bảo chỉ render sau khi client-side mount
-            <div className="filter-group">
+            <div className={styles.filterGroup}>
               <h4>
                 Ngân Sách:
                 <p>
                   ({formatCurrency(minPrice)}đ - {formatCurrency(maxPrice)}đ)
                 </p>
               </h4>
-              <div className="price-slider">
+              <div className={styles.priceSlider}>
                 <input
+                  className={styles.input}
                   type="range"
                   min="500000"
                   max="5000000"
@@ -129,6 +131,7 @@ export default function Booking() {
                   }}
                 />
                 <input
+                  className={styles.input}
                   type="range"
                   min="500000"
                   max="5000000"
@@ -144,21 +147,33 @@ export default function Booking() {
           )}
         </div>
 
-        <div className="content">
-          <div className="search-bar">
-            <div className="input-groups">
-              <input type="date" id="check-in" placeholder=" " />
+        <div className={styles.content}>
+          <div className={styles.searchBar}>
+            <div className={styles.inputGroups}>
+              <input
+                className={styles.input}
+                type="date"
+                id="check-in"
+                min={today}
+                placeholder=" "
+              />
               <label htmlFor="check-in">Ngày nhận phòng</label>
             </div>
-            <div className="input-groups">
-              <input type="date" id="check-out" placeholder=" " />
+            <div className={styles.inputGroups}>
+              <input
+                className={styles.input}
+                type="date"
+                id="check-out"
+                min={today}
+                placeholder=" "
+              />
               <label htmlFor="check-out">Ngày trả phòng</label>
             </div>
-            <Button id="search-btn" variant="outline-warning">
+            <Button id={styles.searchBtn} variant="outline-warning">
               <FontAwesomeIcon icon={faSearch} />
             </Button>
             <Button
-              id="reset-btn"
+              id={styles.resetBtn}
               variant="outline-secondary"
               onClick={resetFilters}
             >
@@ -166,7 +181,7 @@ export default function Booking() {
             </Button>
           </div>
 
-          <div className="result-box">
+          <div className={styles.resultBox}>
             {/* <p>Hiển thị danh sách phòng tại đây...</p> */}
             {rooms.length > 0 ? (
               rooms.map((room, index) => (
@@ -184,7 +199,7 @@ export default function Booking() {
                 />
               ))
             ) : (
-              <p className="no-room-message">
+              <p className={styles.noRoomMessage}>
                 Không có phòng nào phù hợp với tiêu chí lọc.
               </p>
             )}
