@@ -1,0 +1,155 @@
+.dashboardContainer {
+  display: flex;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  padding: 20px;
+}
+
+.title {
+  font-size: 2.2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.searchContainer {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.searchInput {
+  padding: 8px;
+  width: 40%;
+  border-radius: 5px;
+  border: 2px solid #ddd;
+}
+
+.searchInput:focus {
+  outline: none;
+  border: 2px solid var(--main-yellow);
+}
+
+.searchButton,
+.resetButton {
+  background-color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.searchButton {
+  border: 2px solid var(--main-blue);
+  color: var(--main-blue);
+}
+
+.searchButton:hover {
+  background-color: var(--main-blue);
+  color: white;
+}
+
+.resetButton {
+  border: 2px solid var(--main-red);
+  color: var(--main-red);
+}
+
+.resetButton:hover {
+  background-color: var(--main-red);
+  color: white;
+}
+
+.tableContainer {
+  margin-top: 20px;
+  background: white;
+  border-radius: 8px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  background-color: black;
+  color: white;
+}
+
+.table th,
+.table td {
+  padding: 10px;
+  text-align: center;
+}
+
+.table tr {
+  border-bottom: 1px solid #ddd;
+}
+
+.table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.icon {
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.view {
+  color: var(--main-green);
+}
+
+.edit {
+  color: var(--main-yellow);
+}
+
+.delete {
+  color: #dc3545;
+}
+
+.icon:hover {
+  transform: scale(1.1);
+}
+
+.pagination {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  border-radius: 8px;
+}
+
+.pageButton {
+  border: none;
+  background-color: white;
+  border: 1px solid var(--main-blue);
+  color: var(--main-blue);
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+}
+
+.pageButton:hover {
+  background-color: var(--main-blue);
+  color: white;
+  text-decoration: underline;
+}
+
+.activePage {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+}

@@ -11,6 +11,25 @@ import {
   faFileAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+
+interface ActiveLinkProps {
+  href: string;
+  children: React.ReactNode;
+}
+
+const ActiveLink = ({ href, children }: ActiveLinkProps) => {
+  const pathname = usePathname();
+
+  return (
+    <Link
+      href={href}
+      className={`${styles.navItem} ${pathname === href ? styles.active : ""}`}
+    >
+      {children}
+    </Link>
+  );
+};
 
 export default function AdminSidebar() {
   return (
@@ -26,37 +45,34 @@ export default function AdminSidebar() {
         <span className={styles.text}>Hôtel</span>
       </div>
       <nav className={styles.nav}>
-        <Link
-          href="/dashboard"
-          className={`${styles.navItem} ${styles.active}`}
-        >
+        <ActiveLink href="/admin/dashboard">
           <FontAwesomeIcon icon={faChartBar} className={styles.icon} />
           <span>Thống kê</span>
-        </Link>
-        <Link href="/booking" className={styles.navItem}>
+        </ActiveLink>
+        <ActiveLink href="/booking">
           <FontAwesomeIcon icon={faBookmark} className={styles.icon} />
           <span>Đặt phòng</span>
-        </Link>
-        <Link href="/rooms" className={styles.navItem}>
+        </ActiveLink>
+        <ActiveLink href="/rooms">
           <FontAwesomeIcon icon={faBed} className={styles.icon} />
           <span>Phòng</span>
-        </Link>
-        <Link href="/customers" className={styles.navItem}>
+        </ActiveLink>
+        <ActiveLink href="/admin/customers">
           <FontAwesomeIcon icon={faUsers} className={styles.icon} />
           <span>Khách hàng</span>
-        </Link>
-        <Link href="/transactions" className={styles.navItem}>
+        </ActiveLink>
+        <ActiveLink href="/transactions">
           <FontAwesomeIcon icon={faExchangeAlt} className={styles.icon} />
           <span>Giao dịch</span>
-        </Link>
-        <Link href="/services" className={styles.navItem}>
+        </ActiveLink>
+        <ActiveLink href="/services">
           <FontAwesomeIcon icon={faConciergeBell} className={styles.icon} />
           <span>Dịch vụ</span>
-        </Link>
-        <Link href="/reports" className={styles.navItem}>
+        </ActiveLink>
+        <ActiveLink href="/reports">
           <FontAwesomeIcon icon={faFileAlt} className={styles.icon} />
           <span>Báo cáo</span>
-        </Link>
+        </ActiveLink>
       </nav>
     </div>
   );
