@@ -61,7 +61,7 @@ export default function AdminSidebar() {
           <FontAwesomeIcon icon={faUsers} className={styles.icon} />
           <span>Khách hàng</span>
         </ActiveLink>
-        <ActiveLink href="/transactions">
+        <ActiveLink href="/admin/transactions">
           <FontAwesomeIcon icon={faExchangeAlt} className={styles.icon} />
           <span>Giao dịch</span>
         </ActiveLink>
