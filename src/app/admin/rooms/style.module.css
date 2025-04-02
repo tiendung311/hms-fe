@@ -18,9 +18,15 @@
   margin-bottom: 20px;
 }
 
-.filterContainer {
+.searchContainer {
   display: flex;
   gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filterContainer {
+  display: flex;
+  gap: 15px;
   margin-bottom: 20px;
 }
 
@@ -49,23 +55,60 @@
   border: 2px solid var(--main-yellow);
 }
 
-.searchButton,
+.amenityFilterContainer {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.selectedAmenitiesBox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  min-height: 40px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  background-color: white;
+  width: 40%;
+}
+
+.amenityTag {
+  display: flex;
+  align-items: center;
+  background-color: var(--main-blue);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.removeIcon {
+  margin-left: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: white;
+}
+
+.removeIcon:hover {
+  color: var(--main-red);
+}
+
+.placeholder {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
 .resetButton {
   background-color: white;
   padding: 8px 15px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
-
-.searchButton {
-  border: 2px solid var(--main-blue);
-  color: var(--main-blue);
-}
-
-.searchButton:hover {
-  background-color: var(--main-blue);
-  color: white;
 }
 
 .resetButton {

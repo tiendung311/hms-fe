@@ -53,7 +53,7 @@ export default function AdminSidebar() {
           <FontAwesomeIcon icon={faBookmark} className={styles.icon} />
           <span>Đặt phòng</span>
         </ActiveLink>
-        <ActiveLink href="/rooms">
+        <ActiveLink href="/admin/rooms">
           <FontAwesomeIcon icon={faBed} className={styles.icon} />
           <span>Phòng</span>
         </ActiveLink>
