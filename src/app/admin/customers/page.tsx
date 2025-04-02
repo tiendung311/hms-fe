@@ -12,6 +12,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
+import AdminPagination from "../AdminPagination";
 
 interface Customer {
   id: number;
@@ -137,19 +138,11 @@ export default function CustomerManage() {
             </table>
           </div>
 
-          <div className={styles.pagination}>
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i}
-                className={`${styles.pageButton} ${
-                  currentPage === i + 1 ? styles.activePage : ""
-                }`}
-                onClick={() => setCurrentPage(i + 1)}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
+          <AdminPagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
         </div>
       </div>
     </div>

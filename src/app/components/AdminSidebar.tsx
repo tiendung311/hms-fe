@@ -34,16 +34,16 @@ const ActiveLink = ({ href, children }: ActiveLinkProps) => {
 export default function AdminSidebar() {
   return (
     <div className={styles.sidebar}>
-      <div className={styles.logo}>
+      <Link href="/admin/dashboard" className={styles.logo}>
         <Image
           src="/assets/logo-H.png"
           alt="Logo"
-          width={30}
-          height={30}
+          width={40}
+          height={40}
           priority
         />
-        <span className={styles.text}>Hôtel</span>
-      </div>
+        <span className={styles.logoText}>Hôtel</span>
+      </Link>
       <nav className={styles.nav}>
         <ActiveLink href="/admin/dashboard">
           <FontAwesomeIcon icon={faChartBar} className={styles.icon} />
