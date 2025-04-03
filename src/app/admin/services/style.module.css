@@ -18,53 +18,6 @@
   margin-bottom: 20px;
 }
 
-.searchContainer {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.searchInput {
-  padding: 8px;
-  width: 40%;
-  border-radius: 5px;
-  border: 2px solid #ddd;
-}
-
-.searchInput:focus {
-  outline: none;
-  border: 2px solid var(--main-yellow);
-}
-
-.searchButton,
-.resetButton {
-  background-color: white;
-  padding: 8px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.searchButton {
-  border: 2px solid var(--main-blue);
-  color: var(--main-blue);
-}
-
-.searchButton:hover {
-  background-color: var(--main-blue);
-  color: white;
-}
-
-.resetButton {
-  border: 2px solid var(--main-red);
-  color: var(--main-red);
-}
-
-.resetButton:hover {
-  background-color: var(--main-red);
-  color: white;
-}
-
 .tableContainer {
   margin-top: 20px;
   background: white;
