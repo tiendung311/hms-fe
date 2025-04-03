@@ -69,7 +69,7 @@ export default function AdminSidebar() {
           <FontAwesomeIcon icon={faConciergeBell} className={styles.icon} />
           <span>Dịch vụ</span>
         </ActiveLink>
-        <ActiveLink href="/reports">
+        <ActiveLink href="/admin/reports">
           <FontAwesomeIcon icon={faFileAlt} className={styles.icon} />
           <span>Báo cáo</span>
         </ActiveLink>
