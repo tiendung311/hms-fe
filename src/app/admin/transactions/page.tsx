@@ -13,7 +13,7 @@ import {
   faRotateLeft,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AdminPagination from "../AdminPagination";
 
 interface Transaction {
@@ -32,6 +32,7 @@ const PAGE_SIZE = 10;
 
 export default function TransactionManage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
   const [paymentFilter, setPaymentFilter] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [transactions] = useState<Transaction[]>(
@@ -52,6 +53,16 @@ export default function TransactionManage() {
   );
   const [currentPage, setCurrentPage] = useState<number>(1);
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
@@ -69,7 +80,9 @@ export default function TransactionManage() {
 
   const filteredTransactions = transactions.filter(
     (transaction) =>
-      transaction.customer.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      transaction.customer
+        .toLowerCase()
+        .includes(debouncedSearchQuery.toLowerCase()) &&
       (paymentFilter === "" || transaction.paymentMethod === paymentFilter) &&
       (statusFilter === "" || transaction.status === statusFilter)
   );

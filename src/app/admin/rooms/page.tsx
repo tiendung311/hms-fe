@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AdminHeader from "@/app/components/AdminHeader";
 import AdminSidebar from "@/app/components/AdminSidebar";
 import AdminPagination from "../AdminPagination";
@@ -37,6 +37,7 @@ const PAGE_SIZE = 10;
 
 export default function RoomManage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
   const [roomTypeFilter, setRoomTypeFilter] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
@@ -50,6 +51,16 @@ export default function RoomManage() {
       status: ROOM_STATUSES[i % ROOM_STATUSES.length],
     }))
   );
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
@@ -92,7 +103,7 @@ export default function RoomManage() {
 
   const filteredRooms = rooms.filter(
     (room) =>
-      room.number.includes(searchQuery) &&
+      room.number.includes(debouncedSearchQuery) &&
       (roomTypeFilter ? room.type === roomTypeFilter : true) &&
       (statusFilter ? room.status === statusFilter : true) &&
       (selectedAmenities.length
