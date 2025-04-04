@@ -1,3 +1,5 @@
+"use client";
+
 import styles from "./AdminSidebar.module.css";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -49,7 +51,7 @@ export default function AdminSidebar() {
           <FontAwesomeIcon icon={faChartBar} className={styles.icon} />
           <span>Thống kê</span>
         </ActiveLink>
-        <ActiveLink href="/booking">
+        <ActiveLink href="/admin/bookings">
           <FontAwesomeIcon icon={faBookmark} className={styles.icon} />
           <span>Đặt phòng</span>
         </ActiveLink>
