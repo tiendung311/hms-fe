@@ -16,7 +16,6 @@ import AdminPagination from "../AdminPagination";
 interface Customer {
   id: number;
   fullName: string;
-  phone: string;
   email: string;
   bookingCount: number;
 }
@@ -24,11 +23,10 @@ interface Customer {
 const PAGE_SIZE = 10;
 const FILTER_OPTIONS = [
   { value: "fullName", label: "Họ tên" },
-  { value: "phone", label: "Số điện thoại" },
   { value: "email", label: "Email" },
 ] as const;
 
-type FilterKey = "fullName" | "phone" | "email"; // Định nghĩa kiểu key hợp lệ
+type FilterKey = "fullName" | "email";
 
 export default function CustomerManage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -42,7 +40,6 @@ export default function CustomerManage() {
       Array.from({ length: 35 }, (_, i) => ({
         id: i + 1,
         fullName: `Khách hàng ${i + 1}`,
-        phone: `09876543${i % 10}${i}`,
         email: `customer${i + 1}@example.com`,
         bookingCount: Math.floor(Math.random() * 10),
       }));
@@ -133,7 +130,6 @@ export default function CustomerManage() {
                 <tr>
                   <th>STT</th>
                   <th>Họ tên</th>
-                  <th>Số điện thoại</th>
                   <th>Email</th>
                   <th>Tổng số lần đặt phòng</th>
                   <th>Hành động</th>
@@ -144,7 +140,6 @@ export default function CustomerManage() {
                   <tr key={customer.id}>
                     <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
                     <td>{customer.fullName}</td>
-                    <td>{customer.phone}</td>
                     <td>{customer.email}</td>
                     <td>{customer.bookingCount}</td>
                     <td className={styles.actions}>

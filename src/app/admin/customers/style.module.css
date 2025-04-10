@@ -65,6 +65,17 @@
   color: white;
 }
 
+.filterSelect {
+  padding: 8px;
+  border-radius: 5px;
+  border: 2px solid #ddd;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border: 2px solid var(--main-blue);
+}
+
 .tableContainer {
   margin-top: 20px;
   background: white;

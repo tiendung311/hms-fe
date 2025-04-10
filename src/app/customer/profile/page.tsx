@@ -24,10 +24,6 @@ export default function Profile() {
                 <label className={styles.label}>Email:</label>
                 <input className={styles.input} type="text" />
               </div>
-              <div className={styles.infoRow}>
-                <label className={styles.label}>Số điện thoại:</label>
-                <input className={styles.input} type="text" />
-              </div>
             </div>
           </div>
           <div className={styles.passwordGroup}>
