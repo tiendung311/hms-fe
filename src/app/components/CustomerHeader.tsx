@@ -10,10 +10,16 @@ import {
   faIdCard,
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
+import { SignOutButton, useUser } from "@clerk/nextjs";
 
 export default function CustomerHeader() {
+  const { user } = useUser();
+  const fullName = user
+    ? `${user.lastName ?? ""} ${user.firstName ?? ""}`.trim()
+    : "Người dùng";
+
   return (
-    <div className="header">
+    <div className="userHeader">
       <Link
         href="/home"
         className="logo-group"
@@ -43,7 +49,7 @@ export default function CustomerHeader() {
           id="dropdown-basic"
           style={{ color: "white" }}
         >
-          Nguyễn Văn A
+          {fullName}
           <FontAwesomeIcon className="icon" icon={faCaretDown} />
         </Dropdown.Toggle>
 
@@ -60,10 +66,12 @@ export default function CustomerHeader() {
             Đặt phòng
             <FontAwesomeIcon className="icon" icon={faCalendarPlus} />
           </Link>
-          <Link className="dropdown-item" href="/login">
-            Đăng xuất
-            <FontAwesomeIcon className="icon" icon={faRightFromBracket} />
-          </Link>
+          <SignOutButton redirectUrl="/sign-in">
+            <span className="dropdown-item" style={{ cursor: "pointer" }}>
+              Đăng xuất
+              <FontAwesomeIcon className="icon" icon={faRightFromBracket} />
+            </span>
+          </SignOutButton>
         </Dropdown.Menu>
       </Dropdown>
     </div>
