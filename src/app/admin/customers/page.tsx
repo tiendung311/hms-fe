@@ -6,7 +6,6 @@ import styles from "./style.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEye,
-  faPen,
   faRotateLeft,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
@@ -17,7 +16,6 @@ interface Customer {
   id: number;
   fullName: string;
   email: string;
-  bookingCount: number;
 }
 
 const PAGE_SIZE = 10;
@@ -31,22 +29,27 @@ type FilterKey = "fullName" | "email";
 export default function CustomerManage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchFilter, setSearchFilter] = useState<FilterKey>("fullName"); // Mặc định tìm theo Họ tên
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  useEffect(() => {
-    const generateCustomers = () =>
-      Array.from({ length: 35 }, (_, i) => ({
-        id: i + 1,
-        fullName: `Khách hàng ${i + 1}`,
-        email: `customer${i + 1}@example.com`,
-        bookingCount: Math.floor(Math.random() * 10),
-      }));
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
 
-    const initialCustomers = generateCustomers();
-    setCustomers(initialCustomers);
-    setFilteredCustomers(initialCustomers);
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8080/api/admin/customers"
+        );
+        if (!response.ok) throw new Error("Failed to fetch data");
+        const data = await response.json();
+        setCustomers(data);
+        setFilteredCustomers(data);
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      }
+    };
+
+    fetchServices();
   }, []);
 
   useEffect(() => {
@@ -131,33 +134,35 @@ export default function CustomerManage() {
                   <th>STT</th>
                   <th>Họ tên</th>
                   <th>Email</th>
-                  <th>Tổng số lần đặt phòng</th>
                   <th>Hành động</th>
                 </tr>
               </thead>
               <tbody>
-                {currentCustomers.map((customer, index) => (
-                  <tr key={customer.id}>
-                    <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
-                    <td>{customer.fullName}</td>
-                    <td>{customer.email}</td>
-                    <td>{customer.bookingCount}</td>
-                    <td className={styles.actions}>
-                      <FontAwesomeIcon
-                        icon={faEye}
-                        className={`${styles.icon} ${styles.view}`}
-                      />
-                      <FontAwesomeIcon
-                        icon={faPen}
-                        className={`${styles.icon} ${styles.edit}`}
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrash}
-                        className={`${styles.icon} ${styles.delete}`}
-                      />
+                {currentCustomers.length === 0 ? (
+                  <tr key="no-data">
+                    <td colSpan={4} className={styles.emptyRow}>
+                      Không có dữ liệu
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  currentCustomers.map((customer, index) => (
+                    <tr key={customer.id ?? `${customer.fullName}-${index}`}>
+                      <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
+                      <td>{customer.fullName}</td>
+                      <td>{customer.email}</td>
+                      <td className={styles.actions}>
+                        <FontAwesomeIcon
+                          icon={faEye}
+                          className={`${styles.icon} ${styles.view}`}
+                        />
+                        <FontAwesomeIcon
+                          icon={faTrash}
+                          className={`${styles.icon} ${styles.delete}`}
+                        />
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
