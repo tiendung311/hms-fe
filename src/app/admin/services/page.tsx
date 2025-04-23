@@ -11,7 +11,6 @@ interface Service {
   id: number;
   roomType: string;
   services: string[];
-  rooms: number[];
 }
 
 export default function ServiceManage() {
@@ -49,14 +48,13 @@ export default function ServiceManage() {
                   <th>STT</th>
                   <th>Loại phòng</th>
                   <th>Dịch vụ</th>
-                  <th>Phòng</th>
                   <th>Hành động</th>
                 </tr>
               </thead>
               <tbody>
                 {services.length === 0 ? (
                   <tr key="no-data">
-                    <td colSpan={5} className={styles.emptyRow}>
+                    <td colSpan={4} className={styles.emptyRow}>
                       Không có dữ liệu
                     </td>
                   </tr>
@@ -66,7 +64,6 @@ export default function ServiceManage() {
                       <td>{index + 1}</td>
                       <td>{service.roomType}</td>
                       <td>{service.services.join(", ")}</td>
-                      <td>{service.rooms.join(", ")}</td>
                       <td className={styles.actions}>
                         <FontAwesomeIcon
                           icon={faPen}

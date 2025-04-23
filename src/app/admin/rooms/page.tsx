@@ -14,23 +14,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./style.module.css";
 
-const ROOM_TYPES = [
-  "Đơn 3 sao",
-  "Đơn 4 sao",
-  "Đơn 5 sao",
-  "Đôi 3 sao",
-  "Đôi 4 sao",
-  "Đôi 5 sao",
-];
-const ROOM_STATUSES = ["Còn trống", "Đã đặt"];
-const ROOM_AMENITIES = ["WiFi", "TV", "Máy lạnh", "Bồn tắm", "Ban công"];
-
 interface Room {
-  id: number;
-  number: string;
-  type: string;
-  amenities: string[];
-  status: string;
+  roomNumber: string;
+  roomType: string;
+  roomServices: string[];
+  roomStatus: string;
 }
 
 const PAGE_SIZE = 10;
@@ -42,15 +30,76 @@ export default function RoomManage() {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [rooms] = useState<Room[]>(
-    Array.from({ length: 25 }, (_, i) => ({
-      id: i + 1,
-      number: `${100 + (i % 10)}`,
-      type: ROOM_TYPES[i % ROOM_TYPES.length],
-      amenities: ROOM_AMENITIES.slice(0, (i % ROOM_AMENITIES.length) + 1),
-      status: ROOM_STATUSES[i % ROOM_STATUSES.length],
-    }))
-  );
+  const [rooms, setRooms] = useState<Room[]>([]);
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/admin/rooms");
+        if (!response.ok) throw new Error("Failed to fetch data");
+        const data = await response.json();
+        setRooms(data);
+        console.log("Rooms data:", data);
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      }
+    };
+
+    fetchRooms();
+  }, []);
+
+  const [roomStatuses, setRoomStatuses] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchRoomStatuses = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/rooms/status");
+        if (!response.ok) throw new Error("Failed to fetch room statuses");
+        const data = await response.json();
+        setRoomStatuses(data);
+      } catch (error) {
+        console.error("Error fetching room statuses:", error);
+      }
+    };
+
+    fetchRoomStatuses();
+  }, []);
+
+  const [services, setServices] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8080/api/services/names"
+        );
+        if (!response.ok) throw new Error("Failed to fetch services");
+        const data = await response.json();
+        setServices(data);
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      }
+    };
+
+    fetchServices();
+  }, []);
+
+  const [roomTypes, setRoomTypes] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchRoomTypes = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/room-types");
+        if (!response.ok) throw new Error("Failed to fetch room types");
+        const data = await response.json();
+        setRoomTypes(data);
+      } catch (error) {
+        console.error("Error fetching room types:", error);
+      }
+    };
+
+    fetchRoomTypes();
+  }, []);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -101,21 +150,39 @@ export default function RoomManage() {
     }
   };
 
-  const filteredRooms = rooms.filter(
-    (room) =>
-      room.number.includes(debouncedSearchQuery) &&
-      (roomTypeFilter ? room.type === roomTypeFilter : true) &&
-      (statusFilter ? room.status === statusFilter : true) &&
-      (selectedAmenities.length
-        ? selectedAmenities.every((amenity) => room.amenities.includes(amenity))
-        : true)
-  );
+  const filteredRooms = rooms.filter((room) => {
+    const matchesSearch = debouncedSearchQuery
+      ? room.roomNumber
+          ?.toLowerCase()
+          .includes(debouncedSearchQuery.toLowerCase())
+      : true;
+
+    const matchesRoomType = roomTypeFilter
+      ? room.roomType === roomTypeFilter
+      : true;
+    const matchesStatus = statusFilter
+      ? room.roomStatus === statusFilter
+      : true;
+    const matchesAmenities = selectedAmenities.length
+      ? selectedAmenities.every((amenity) =>
+          Array.isArray(room.roomServices)
+            ? room.roomServices.includes(amenity)
+            : false
+        )
+      : true;
+
+    return (
+      matchesSearch && matchesRoomType && matchesStatus && matchesAmenities
+    );
+  });
 
   const totalPages = Math.ceil(filteredRooms.length / PAGE_SIZE);
   const currentRooms = filteredRooms.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE
   );
+  console.log("Current rooms:", currentRooms);
+  console.log("Filtered rooms:", filteredRooms);
 
   return (
     <div className={styles.dashboardContainer}>
@@ -140,11 +207,15 @@ export default function RoomManage() {
               onChange={(e) => handleFilterChange(e, setRoomTypeFilter)}
             >
               <option value="">Loại phòng</option>
-              {ROOM_TYPES.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
+              {roomTypes.length > 0 ? (
+                roomTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))
+              ) : (
+                <option disabled>Đang tải...</option>
+              )}
             </select>
 
             <select
@@ -153,11 +224,15 @@ export default function RoomManage() {
               onChange={(e) => handleFilterChange(e, setStatusFilter)}
             >
               <option value="">Trạng thái</option>
-              {ROOM_STATUSES.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
+              {roomStatuses.length > 0 ? (
+                roomStatuses.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))
+              ) : (
+                <option disabled>Đang tải...</option>
+              )}
             </select>
 
             <button className={styles.resetButton} onClick={handleReset}>
@@ -171,10 +246,13 @@ export default function RoomManage() {
               className={styles.filterSelect}
               id="amenitySelect"
               onChange={handleAmenitySelect}
-              disabled={selectedAmenities.length === ROOM_AMENITIES.length}
+              disabled={
+                services.length === 0 ||
+                selectedAmenities.length === services.length
+              }
             >
               <option value="">Chọn tiện ích</option>
-              {ROOM_AMENITIES.map((amenity) => (
+              {services.map((amenity) => (
                 <option
                   key={amenity}
                   value={amenity}
@@ -218,39 +296,51 @@ export default function RoomManage() {
                 </tr>
               </thead>
               <tbody>
-                {currentRooms.map((room, index) => (
-                  <tr key={room.id}>
-                    <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
-                    <td>{room.number}</td>
-                    <td>{room.type}</td>
-                    <td>{room.amenities.join(", ")}</td>
-                    <td
-                      className={styles.status}
-                      style={{
-                        color:
-                          room.status === "Còn trống"
-                            ? "var(--main-green)"
-                            : "orange",
-                      }}
-                    >
-                      {room.status}
-                    </td>
-                    <td className={styles.actions}>
-                      <FontAwesomeIcon
-                        icon={faEye}
-                        className={`${styles.icon} ${styles.view}`}
-                      />
-                      <FontAwesomeIcon
-                        icon={faPen}
-                        className={`${styles.icon} ${styles.edit}`}
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrash}
-                        className={`${styles.icon} ${styles.delete}`}
-                      />
+                {currentRooms.length === 0 ? (
+                  <tr key="no-data">
+                    <td colSpan={6} className={styles.emptyRow}>
+                      Không có dữ liệu
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  currentRooms.map((room, index) => (
+                    <tr key={`${room.roomNumber}-${index}`}>
+                      <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
+                      <td>{room.roomNumber}</td>
+                      <td>{room.roomType}</td>
+                      <td>
+                        {room.roomServices?.join(", ") ?? "Không có tiện nghi"}
+                      </td>
+                      <td className={styles.status}>
+                        <span
+                          className={
+                            room.roomStatus === "Trống"
+                              ? styles.textGreen
+                              : room.roomStatus === "Đã đặt"
+                              ? styles.textRed
+                              : styles.textOrange
+                          }
+                        >
+                          {room.roomStatus}
+                        </span>
+                      </td>
+                      <td className={styles.actions}>
+                        <FontAwesomeIcon
+                          icon={faEye}
+                          className={`${styles.icon} ${styles.view}`}
+                        />
+                        <FontAwesomeIcon
+                          icon={faPen}
+                          className={`${styles.icon} ${styles.edit}`}
+                        />
+                        <FontAwesomeIcon
+                          icon={faTrash}
+                          className={`${styles.icon} ${styles.delete}`}
+                        />
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
