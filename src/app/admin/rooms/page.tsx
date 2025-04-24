@@ -184,6 +184,10 @@ export default function RoomManage() {
   console.log("Current rooms:", currentRooms);
   console.log("Filtered rooms:", filteredRooms);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchQuery, roomTypeFilter, statusFilter, selectedAmenities]);
+
   return (
     <div className={styles.dashboardContainer}>
       <AdminSidebar />

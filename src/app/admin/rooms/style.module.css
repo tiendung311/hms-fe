@@ -180,14 +180,14 @@
 
 .textGreen {
   color: white;
-  background-color: green;
+  background-color: var(--main-green);
   padding: 4px 10px;
   border-radius: 4px;
 }
 
 .textRed {
   color: white;
-  background-color: red;
+  background-color: var(--main-red);
   padding: 4px 10px;
   border-radius: 4px;
 }
