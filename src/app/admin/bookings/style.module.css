@@ -85,6 +85,18 @@
   border-color: var(--main-blue);
 }
 
+.dateLabel {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-right: 10px;
+}
+
+.dateGroup {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .resetButton,
 .addButton {
   background-color: white;

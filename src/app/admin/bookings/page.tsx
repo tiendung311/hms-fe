@@ -14,17 +14,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./style.module.css";
 
-const ROOM_TYPES = [
-  "Đơn 3 sao",
-  "Đơn 4 sao",
-  "Đơn 5 sao",
-  "Đôi 3 sao",
-  "Đôi 4 sao",
-  "Đôi 5 sao",
-];
-
-const BOOKING_STATUSES = ["Chờ", "Xác nhận", "Nhận phòng", "Hủy", "Trả phòng"];
-
 const getStatusStyle = (status: string) => {
   switch (status) {
     case "Chờ":
@@ -44,12 +33,11 @@ const getStatusStyle = (status: string) => {
 
 interface Booking {
   id: number;
-  customer: string;
-  room: string;
-  type: string;
+  fullName: string;
+  roomNumber: string;
   checkInDate: string;
   checkOutDate: string;
-  status: string;
+  bookingStatus: string;
 }
 
 const PAGE_SIZE = 10;
@@ -57,23 +45,48 @@ const PAGE_SIZE = 10;
 export default function BookingManage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
-  const [roomTypeFilter, setRoomTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [bookings] = useState<Booking[]>(
-    Array.from({ length: 28 }, (_, i) => ({
-      id: i + 1,
-      customer: `Khách ${i + 1}`,
-      room: `${100 + (i % 10)}`,
-      type: ROOM_TYPES[i % ROOM_TYPES.length],
-      checkInDate: "2025-04-01",
-      checkOutDate: "2025-04-05",
-      status: BOOKING_STATUSES[i % BOOKING_STATUSES.length],
-    }))
-  );
+  const [bookings, setBookings] = useState<Booking[]>([]);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8080/api/admin/bookings"
+        );
+        if (!response.ok) throw new Error("Failed to fetch bookings");
+        const data = await response.json();
+        setBookings(data);
+      } catch (error) {
+        console.error("Error fetching bookings:", error);
+      }
+    };
+
+    fetchBookings();
+  }, []);
+
+  const [bookingStatuses, setBookingStatuses] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchBookingStatuses = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8080/api/bookings/status"
+        );
+        if (!response.ok) throw new Error("Failed to fetch booking statuses");
+        const data = await response.json();
+        setBookingStatuses(data);
+      } catch (error) {
+        console.error("Error fetching booking statuses:", error);
+      }
+    };
+
+    fetchBookingStatuses();
+  }, []);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -84,27 +97,39 @@ export default function BookingManage() {
 
   const handleReset = () => {
     setSearchQuery("");
-    setRoomTypeFilter("");
     setStatusFilter("");
     setFromDate("");
     setToDate("");
     setCurrentPage(1);
   };
 
-  const filteredBookings = bookings.filter(
-    (b) =>
-      b.customer.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) &&
-      (roomTypeFilter ? b.type === roomTypeFilter : true) &&
-      (statusFilter ? b.status === statusFilter : true) &&
-      (!fromDate || b.checkInDate >= fromDate) &&
-      (!toDate || b.checkOutDate <= toDate)
-  );
+  const convertToISODate = (dateStr: string) => {
+    // from "dd/MM/yyyy" to "yyyy-MM-dd"
+    const [day, month, year] = dateStr.split("/");
+    return `${year}-${month}-${day}`;
+  };
+
+  const filteredBookings = bookings.filter((b) => {
+    const formattedCheckIn = convertToISODate(b.checkInDate);
+    const formattedCheckOut = convertToISODate(b.checkOutDate);
+
+    return (
+      b.fullName.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) &&
+      (statusFilter ? b.bookingStatus === statusFilter : true) &&
+      (!fromDate || formattedCheckIn >= fromDate) &&
+      (!toDate || formattedCheckOut <= toDate)
+    );
+  });
 
   const totalPages = Math.ceil(filteredBookings.length / PAGE_SIZE);
   const currentBookings = filteredBookings.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE
   );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, fromDate, toDate]);
 
   return (
     <div className={styles.dashboardContainer}>
@@ -126,28 +151,19 @@ export default function BookingManage() {
 
               <select
                 className={styles.filterSelect}
-                value={roomTypeFilter}
-                onChange={(e) => setRoomTypeFilter(e.target.value)}
-              >
-                <option value="">Loại phòng</option>
-                {ROOM_TYPES.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                className={styles.filterSelect}
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
                 <option value="">Trạng thái</option>
-                {BOOKING_STATUSES.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
+                {bookingStatuses.length > 0 ? (
+                  bookingStatuses.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>Chưa có dữ liệu trong danh sách</option>
+                )}
               </select>
 
               <button className={styles.resetButton} onClick={handleReset}>
@@ -165,18 +181,24 @@ export default function BookingManage() {
           </div>
 
           <div className={styles.dateFilterContainer}>
-            <input
-              type="date"
-              className={styles.dateInput}
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-            />
-            <input
-              type="date"
-              className={styles.dateInput}
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-            />
+            <div className={styles.dateGroup}>
+              <label className={styles.dateLabel}>Từ ngày:</label>
+              <input
+                type="date"
+                className={styles.dateInput}
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+              />
+            </div>
+            <div className={styles.dateGroup} style={{ marginLeft: 50 }}>
+              <label className={styles.dateLabel}>Đến ngày:</label>
+              <input
+                type="date"
+                className={styles.dateInput}
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+              />
+            </div>
           </div>
 
           <div className={styles.tableContainer}>
@@ -186,7 +208,6 @@ export default function BookingManage() {
                   <th>STT</th>
                   <th>Khách hàng</th>
                   <th>Phòng</th>
-                  <th>Loại phòng</th>
                   <th>Ngày nhận phòng</th>
                   <th>Ngày trả phòng</th>
                   <th>Trạng thái</th>
@@ -194,33 +215,42 @@ export default function BookingManage() {
                 </tr>
               </thead>
               <tbody>
-                {currentBookings.map((booking, index) => (
-                  <tr key={booking.id}>
-                    <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
-                    <td>{booking.customer}</td>
-                    <td>{booking.room}</td>
-                    <td>{booking.type}</td>
-                    <td>{booking.checkInDate}</td>
-                    <td>{booking.checkOutDate}</td>
-                    <td style={getStatusStyle(booking.status)}>
-                      {booking.status}
-                    </td>
-                    <td className={styles.actions}>
-                      <FontAwesomeIcon
-                        icon={faEye}
-                        className={`${styles.icon} ${styles.view}`}
-                      />
-                      <FontAwesomeIcon
-                        icon={faPen}
-                        className={`${styles.icon} ${styles.edit}`}
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrash}
-                        className={`${styles.icon} ${styles.delete}`}
-                      />
+                {currentBookings.length === 0 ? (
+                  <tr key="no-data">
+                    <td colSpan={7} className={styles.emptyRow}>
+                      Không có dữ liệu
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  currentBookings.map((booking, index) => (
+                    <tr
+                      key={`${booking.roomNumber}-${booking.checkInDate}-${index}`}
+                    >
+                      <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
+                      <td>{booking.fullName}</td>
+                      <td>{booking.roomNumber}</td>
+                      <td>{booking.checkInDate}</td>
+                      <td>{booking.checkOutDate}</td>
+                      <td style={getStatusStyle(booking.bookingStatus)}>
+                        {booking.bookingStatus}
+                      </td>
+                      <td className={styles.actions}>
+                        <FontAwesomeIcon
+                          icon={faEye}
+                          className={`${styles.icon} ${styles.view}`}
+                        />
+                        <FontAwesomeIcon
+                          icon={faPen}
+                          className={`${styles.icon} ${styles.edit}`}
+                        />
+                        <FontAwesomeIcon
+                          icon={faTrash}
+                          className={`${styles.icon} ${styles.delete}`}
+                        />
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

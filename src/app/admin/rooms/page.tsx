@@ -218,7 +218,7 @@ export default function RoomManage() {
                   </option>
                 ))
               ) : (
-                <option disabled>Đang tải...</option>
+                <option disabled>Chưa có dữ liệu trong danh sách</option>
               )}
             </select>
 
@@ -235,7 +235,7 @@ export default function RoomManage() {
                   </option>
                 ))
               ) : (
-                <option disabled>Đang tải...</option>
+                <option disabled>Chưa có dữ liệu trong danh sách</option>
               )}
             </select>
 
