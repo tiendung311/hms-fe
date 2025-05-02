@@ -6,7 +6,6 @@ import styles from "./style.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBuildingColumns,
-  faCreditCard,
   faEye,
   faMoneyBillWave,
   faPen,
@@ -17,17 +16,14 @@ import { useEffect, useState } from "react";
 import AdminPagination from "../AdminPagination";
 
 interface Transaction {
-  id: number;
-  customer: string;
-  room: string;
-  time: string;
+  fullName: string;
+  roomNumber: string;
+  paymentDate: string;
   paymentMethod: string;
-  status: string;
+  paymentStatus: string;
   amount: string;
 }
 
-const PAYMENT_METHODS = ["Thẻ tín dụng", "Chuyển khoản", "Tiền mặt"];
-const STATUSES = ["Chờ", "Thành công", "Thất bại", "Hoàn tiền"];
 const PAGE_SIZE = 10;
 
 export default function TransactionManage() {
@@ -35,22 +31,60 @@ export default function TransactionManage() {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
   const [paymentFilter, setPaymentFilter] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("");
-  const [transactions] = useState<Transaction[]>(
-    Array.from({ length: 25 }, (_, i) => ({
-      id: i + 1,
-      customer: `Khách hàng ${i + 1}`,
-      room: `${100 + (i % 10)}`,
-      time: `${String(8 + (i % 12)).padStart(2, "0")}:${String(i % 60).padStart(
-        2,
-        "0"
-      )} ${String((i % 30) + 1).padStart(2, "0")}/04/2025`,
-      paymentMethod: PAYMENT_METHODS[i % PAYMENT_METHODS.length],
-      status: STATUSES[i % STATUSES.length],
-      amount: `${(Math.floor(Math.random() * 5000000) + 1000000).toLocaleString(
-        "vi-VN"
-      )}₫`,
-    }))
-  );
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8080/api/admin/payments"
+        );
+        const data = await response.json();
+        setTransactions(data);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
+
+  const [paymentStatuses, setPaymentStatuses] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchPaymentStatuses = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8080/api/payments/status"
+        );
+        const data = await response.json();
+        setPaymentStatuses(data);
+      } catch (error) {
+        console.error("Error fetching payment statuses:", error);
+      }
+    };
+
+    fetchPaymentStatuses();
+  });
+
+  const [paymentMethods, setPaymentMethods] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchPaymentMethods = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8080/api/payments/method"
+        );
+        const data = await response.json();
+        setPaymentMethods(data);
+      } catch (error) {
+        console.error("Error fetching payment methods:", error);
+      }
+    };
+
+    fetchPaymentMethods();
+  }, []);
+
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   useEffect(() => {
@@ -80,11 +114,11 @@ export default function TransactionManage() {
 
   const filteredTransactions = transactions.filter(
     (transaction) =>
-      transaction.customer
+      transaction.fullName
         .toLowerCase()
         .includes(debouncedSearchQuery.toLowerCase()) &&
       (paymentFilter === "" || transaction.paymentMethod === paymentFilter) &&
-      (statusFilter === "" || transaction.status === statusFilter)
+      (statusFilter === "" || transaction.paymentStatus === statusFilter)
   );
 
   const handleReset = () => {
@@ -117,13 +151,6 @@ export default function TransactionManage() {
 
   const getPaymentIcon = (method: string) => {
     switch (method) {
-      case "Thẻ tín dụng":
-        return (
-          <FontAwesomeIcon
-            icon={faCreditCard}
-            style={{ marginRight: 5, color: "orange" }}
-          />
-        );
       case "Chuyển khoản":
         return (
           <FontAwesomeIcon
@@ -142,6 +169,10 @@ export default function TransactionManage() {
         return null;
     }
   };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [paymentFilter, statusFilter]);
 
   return (
     <div className={styles.dashboardContainer}>
@@ -166,11 +197,15 @@ export default function TransactionManage() {
               onChange={(e) => handleFilterChange(e, "payment")}
             >
               <option value="">Phương thức thanh toán</option>
-              {PAYMENT_METHODS.map((method, index) => (
-                <option key={index} value={method}>
-                  {method}
-                </option>
-              ))}
+              {paymentMethods.length > 0 ? (
+                paymentMethods.map((method, index) => (
+                  <option key={index} value={method}>
+                    {method}
+                  </option>
+                ))
+              ) : (
+                <option disabled>Không có phương thức thanh toán</option>
+              )}
             </select>
 
             <select
@@ -179,11 +214,15 @@ export default function TransactionManage() {
               onChange={(e) => handleFilterChange(e, "status")}
             >
               <option value="">Trạng thái</option>
-              {STATUSES.map((status, index) => (
-                <option key={index} value={status}>
-                  {status}
-                </option>
-              ))}
+              {paymentStatuses.length > 0 ? (
+                paymentStatuses.map((status, index) => (
+                  <option key={index} value={status}>
+                    {status}
+                  </option>
+                ))
+              ) : (
+                <option disabled>Không có trạng thái thanh toán</option>
+              )}
             </select>
 
             <button className={styles.resetButton} onClick={handleReset}>
@@ -210,44 +249,60 @@ export default function TransactionManage() {
                 </tr>
               </thead>
               <tbody>
-                {currentTransactions.map((transaction, index) => (
-                  <tr key={transaction.id}>
-                    <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
-                    <td>{transaction.customer}</td>
-                    <td>{transaction.room}</td>
-                    <td>{transaction.time}</td>
-                    <td>
-                      {getPaymentIcon(transaction.paymentMethod)}{" "}
-                      {transaction.paymentMethod}
-                    </td>
-                    <td>
-                      <span
-                        style={{
-                          ...getStatusStyle(transaction.status),
-                          padding: "5px 8px",
-                          borderRadius: "5px",
-                        }}
-                      >
-                        {transaction.status}
-                      </span>
-                    </td>
-                    <td>{transaction.amount}</td>
-                    <td className={styles.actions}>
-                      <FontAwesomeIcon
-                        icon={faEye}
-                        className={`${styles.icon} ${styles.view}`}
-                      />
-                      <FontAwesomeIcon
-                        icon={faPen}
-                        className={`${styles.icon} ${styles.edit}`}
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrash}
-                        className={`${styles.icon} ${styles.delete}`}
-                      />
+                {currentTransactions.length === 0 ? (
+                  <tr key="no-data">
+                    <td colSpan={8} className={styles.emptyRow}>
+                      Không có dữ liệu
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  currentTransactions.map((transaction, index) => (
+                    <tr key={`${transaction.roomNumber}-${index}`}>
+                      <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
+                      <td>{transaction.fullName}</td>
+                      <td>{transaction.roomNumber}</td>
+                      <td>{transaction.paymentDate}</td>
+                      <td>
+                        {getPaymentIcon(transaction.paymentMethod)}{" "}
+                        {transaction.paymentMethod}
+                      </td>
+                      <td>
+                        <span
+                          style={{
+                            ...getStatusStyle(transaction.paymentStatus),
+                            padding: "5px 8px",
+                            borderRadius: "5px",
+                            display: "inline-block",
+                            textAlign: "center",
+                          }}
+                        >
+                          {transaction.paymentStatus}
+                        </span>
+                      </td>
+                      <td>
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                          minimumFractionDigits: 0,
+                        }).format(Number(transaction.amount))}
+                      </td>
+                      <td className={styles.actions}>
+                        <FontAwesomeIcon
+                          icon={faEye}
+                          className={`${styles.icon} ${styles.view}`}
+                        />
+                        <FontAwesomeIcon
+                          icon={faPen}
+                          className={`${styles.icon} ${styles.edit}`}
+                        />
+                        <FontAwesomeIcon
+                          icon={faTrash}
+                          className={`${styles.icon} ${styles.delete}`}
+                        />
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
