@@ -5,12 +5,14 @@ import AdminSidebar from "@/app/components/AdminSidebar";
 import styles from "./style.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faEye,
+  faPen,
   faRotateLeft,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import AdminPagination from "../AdminPagination";
+import ConfirmDeleteModal from "@/app/components/ConfirmDeleteModal";
+import { ToastContainer, toast } from "react-toastify";
 
 interface Customer {
   id: number;
@@ -30,6 +32,11 @@ export default function CustomerManage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchFilter, setSearchFilter] = useState<FilterKey>("fullName"); // Mặc định tìm theo Họ tên
   const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCustomerEmail, setSelectedCustomerEmail] = useState<
+    string | null
+  >(null);
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
@@ -86,6 +93,38 @@ export default function CustomerManage() {
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE
   );
+
+  const handleDeleteClick = (email: string) => {
+    setSelectedCustomerEmail(email);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedCustomerEmail) return;
+
+    try {
+      await fetch(
+        `http://localhost:8080/api/admin/customers/${selectedCustomerEmail}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      setCustomers((prev) =>
+        prev.filter((c) => c.email !== selectedCustomerEmail)
+      );
+      setFilteredCustomers((prev) =>
+        prev.filter((c) => c.email !== selectedCustomerEmail)
+      );
+      toast.success("Thao tác thành công!");
+    } catch (error) {
+      console.error("Lỗi khi xóa khách hàng:", error);
+      toast.error("Thao tác thất bại!");
+    } finally {
+      setIsModalOpen(false);
+      setSelectedCustomerEmail(null);
+    }
+  };
 
   return (
     <div className={styles.dashboardContainer}>
@@ -152,12 +191,13 @@ export default function CustomerManage() {
                       <td>{customer.email}</td>
                       <td className={styles.actions}>
                         <FontAwesomeIcon
-                          icon={faEye}
-                          className={`${styles.icon} ${styles.view}`}
+                          icon={faPen}
+                          className={`${styles.icon} ${styles.edit}`}
                         />
                         <FontAwesomeIcon
                           icon={faTrash}
                           className={`${styles.icon} ${styles.delete}`}
+                          onClick={() => handleDeleteClick(customer.email)}
                         />
                       </td>
                     </tr>
@@ -166,6 +206,22 @@ export default function CustomerManage() {
               </tbody>
             </table>
           </div>
+
+          <ConfirmDeleteModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onConfirm={handleConfirmDelete}
+            message="Bạn có chắc chắn muốn xóa khách hàng này?"
+          />
+
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            closeOnClick
+            pauseOnHover
+            draggable
+          />
 
           <AdminPagination
             totalPages={totalPages}
