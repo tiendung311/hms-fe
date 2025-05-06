@@ -1,0 +1,139 @@
+.dashboardContainer {
+  display: flex;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  padding: 20px;
+}
+
+.title {
+  font-size: 2.2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.breadcrumb {
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+  color: #555;
+  cursor: pointer;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.formGroup input {
+  width: 40%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.amenityFilterContainer {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.filterSelect {
+  padding: 8px;
+  border-radius: 5px;
+  border: 2px solid #ddd;
+  background-color: white;
+  cursor: pointer;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: var(--main-blue);
+}
+
+.selectedAmenitiesBox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  min-height: 40px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  background-color: white;
+  width: 40%;
+}
+
+.amenityTag {
+  display: flex;
+  align-items: center;
+  background-color: var(--main-blue);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.removeIcon {
+  margin-left: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: white;
+}
+
+.removeIcon:hover {
+  color: var(--main-red);
+}
+
+.placeholder {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.updateButton,
+.backButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.updateButton {
+  border: 1px solid var(--main-blue);
+  color: var(--main-blue);
+}
+
+.updateButton:hover {
+  background-color: var(--main-blue);
+  color: white;
+}
+
+.backButton {
+  border: 1px solid var(--main-red);
+  color: var(--main-red);
+}
+
+.backButton:hover {
+  background-color: var(--main-red);
+  color: white;
+}

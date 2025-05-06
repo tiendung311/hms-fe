@@ -4,17 +4,20 @@ import AdminHeader from "@/app/components/AdminHeader";
 import AdminSidebar from "@/app/components/AdminSidebar";
 import styles from "./style.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface Service {
   id: number;
+  serviceId: number;
   roomType: string;
   services: string[];
 }
 
 export default function ServiceManage() {
   const [services, setServices] = useState<Service[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -68,10 +71,11 @@ export default function ServiceManage() {
                         <FontAwesomeIcon
                           icon={faPen}
                           className={`${styles.icon} ${styles.edit}`}
-                        />
-                        <FontAwesomeIcon
-                          icon={faTrash}
-                          className={`${styles.icon} ${styles.delete}`}
+                          onClick={() =>
+                            router.push(
+                              `/admin/services/edit/${service.serviceId}`
+                            )
+                          }
                         />
                       </td>
                     </tr>
