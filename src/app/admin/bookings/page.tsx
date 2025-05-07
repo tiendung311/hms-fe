@@ -8,11 +8,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEye,
   faPen,
-  faTrash,
   faRotateLeft,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./style.module.css";
+import { toast } from "react-toastify";
+import BookingDetailModal from "@/app/components/admin/bookings/BookingDetailModal";
 
 const getStatusStyle = (status: string) => {
   switch (status) {
@@ -33,11 +34,23 @@ const getStatusStyle = (status: string) => {
 
 interface Booking {
   id: number;
+  bookingId: number;
   fullName: string;
   roomNumber: string;
   checkInDate: string;
   checkOutDate: string;
   bookingStatus: string;
+}
+
+interface BookingDetail {
+  id: number;
+  bookingId: number;
+  fullName: string;
+  roomNumber: string;
+  checkInDate: string;
+  checkOutDate: string;
+  bookingStatus: string;
+  totalPrice: number;
 }
 
 const PAGE_SIZE = 10;
@@ -87,6 +100,26 @@ export default function BookingManage() {
 
     fetchBookingStatuses();
   }, []);
+
+  const [selectedBooking, setSelectedBooking] = useState<BookingDetail | null>(
+    null
+  );
+  const [showModal, setShowModal] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  const handleViewDetail = async (id: number, editable: boolean) => {
+    try {
+      const res = await fetch(`http://localhost:8080/api/admin/bookings/${id}`);
+      if (!res.ok) throw new Error("Không thể lấy chi tiết đặt phòng");
+      const data = await res.json();
+      setSelectedBooking(data);
+      setIsEditMode(editable);
+      setShowModal(true);
+    } catch (err) {
+      console.error(err);
+      toast.error("Lỗi khi lấy thông tin chi tiết");
+    }
+  };
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -238,14 +271,16 @@ export default function BookingManage() {
                         <FontAwesomeIcon
                           icon={faEye}
                           className={`${styles.icon} ${styles.view}`}
+                          onClick={() =>
+                            handleViewDetail(booking.bookingId, false)
+                          }
                         />
                         <FontAwesomeIcon
                           icon={faPen}
                           className={`${styles.icon} ${styles.edit}`}
-                        />
-                        <FontAwesomeIcon
-                          icon={faTrash}
-                          className={`${styles.icon} ${styles.delete}`}
+                          onClick={() =>
+                            handleViewDetail(booking.bookingId, true)
+                          }
                         />
                       </td>
                     </tr>
@@ -260,6 +295,23 @@ export default function BookingManage() {
             currentPage={currentPage}
             onPageChange={setCurrentPage}
           />
+
+          {selectedBooking && (
+            <BookingDetailModal
+              isOpen={showModal}
+              onClose={() => setShowModal(false)}
+              bookingDetail={{
+                bookingId: selectedBooking.bookingId,
+                fullName: selectedBooking.fullName,
+                roomNumber: selectedBooking.roomNumber,
+                checkInDate: selectedBooking.checkInDate,
+                checkOutDate: selectedBooking.checkOutDate,
+                bookingStatus: selectedBooking.bookingStatus,
+                totalPrice: selectedBooking.totalPrice,
+              }}
+              isEditable={isEditMode}
+            />
+          )}
         </div>
       </div>
     </div>
