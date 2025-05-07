@@ -6,13 +6,13 @@ import AdminSidebar from "@/app/components/AdminSidebar";
 import AdminPagination from "../AdminPagination";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faEye,
   faPen,
-  faTrash,
   faTimes,
   faRotateLeft,
+  faWrench,
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./style.module.css";
+import { ToastContainer, toast } from "react-toastify";
 
 interface Room {
   roomNumber: string;
@@ -176,13 +176,46 @@ export default function RoomManage() {
     );
   });
 
+  const toggleRoomMaintenance = async (roomNumber: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/admin/rooms/${roomNumber}/toggle-maintenance`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Thao tác thất bại");
+      }
+
+      toast.success(`Đã cập nhật trạng thái phòng ${roomNumber}`);
+
+      setRooms((prevRooms) =>
+        prevRooms.map((room) =>
+          room.roomNumber === roomNumber
+            ? {
+                ...room,
+                roomStatus: room.roomStatus === "Trống" ? "Bảo trì" : "Trống",
+              }
+            : room
+        )
+      );
+    } catch (err) {
+      console.error("Toggle failed:", err);
+      toast.error("Không thể cập nhật trạng thái phòng");
+    }
+  };
+
   const totalPages = Math.ceil(filteredRooms.length / PAGE_SIZE);
   const currentRooms = filteredRooms.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE
   );
-  console.log("Current rooms:", currentRooms);
-  console.log("Filtered rooms:", filteredRooms);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -322,7 +355,9 @@ export default function RoomManage() {
                               ? styles.textGreen
                               : room.roomStatus === "Đã đặt"
                               ? styles.textRed
-                              : styles.textOrange
+                              : room.roomStatus === "Chờ"
+                              ? styles.textOrange
+                              : styles.textGrey
                           }
                         >
                           {room.roomStatus}
@@ -330,16 +365,13 @@ export default function RoomManage() {
                       </td>
                       <td className={styles.actions}>
                         <FontAwesomeIcon
-                          icon={faEye}
-                          className={`${styles.icon} ${styles.view}`}
-                        />
-                        <FontAwesomeIcon
                           icon={faPen}
                           className={`${styles.icon} ${styles.edit}`}
                         />
                         <FontAwesomeIcon
-                          icon={faTrash}
+                          icon={faWrench}
                           className={`${styles.icon} ${styles.delete}`}
+                          onClick={() => toggleRoomMaintenance(room.roomNumber)}
                         />
                       </td>
                     </tr>
@@ -348,6 +380,15 @@ export default function RoomManage() {
               </tbody>
             </table>
           </div>
+
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            closeOnClick
+            pauseOnHover
+            draggable
+          />
 
           <AdminPagination
             totalPages={totalPages}

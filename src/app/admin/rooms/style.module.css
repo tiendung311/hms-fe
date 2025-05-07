@@ -198,3 +198,10 @@
   padding: 4px 10px;
   border-radius: 4px;
 }
+
+.textGrey {
+  color: white;
+  background-color: #6c757d;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
