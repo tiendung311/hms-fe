@@ -48,13 +48,70 @@ export default function BookingDetailModal({
     }
   }, [isEditable, bookingDetail.roomNumber]);
 
-  if (!isOpen) return null;
-
   const toInputDate = (dateString: string): string => {
     if (!dateString.includes("/")) return dateString;
     const [day, month, year] = dateString.split("/");
     return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
   };
+
+  const [checkInDate, setCheckInDate] = useState(
+    toInputDate(bookingDetail.checkInDate)
+  );
+  const [checkOutDate, setCheckOutDate] = useState(
+    toInputDate(bookingDetail.checkOutDate)
+  );
+  const [totalPrice, setTotalPrice] = useState<number>(
+    bookingDetail.totalPrice
+  );
+  const [loadingPrice, setLoadingPrice] = useState(false);
+
+  useEffect(() => {
+    if (!isEditable) return;
+
+    const initialRoom = bookingDetail.roomNumber;
+    const initialCheckIn = toInputDate(bookingDetail.checkInDate);
+    const initialCheckOut = toInputDate(bookingDetail.checkOutDate);
+
+    // If nothing changed, don't fetch price
+    if (
+      selectedRoom === initialRoom &&
+      checkInDate === initialCheckIn &&
+      checkOutDate === initialCheckOut
+    ) {
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      if (selectedRoom && checkInDate && checkOutDate) {
+        setLoadingPrice(true);
+        fetch(
+          `http://localhost:8080/api/admin/bookings/calculate-price?roomNumber=${selectedRoom}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`
+        )
+          .then((res) => {
+            if (!res.ok) throw new Error("Không tính được giá");
+            return res.json();
+          })
+          .then((data) => {
+            setTotalPrice(data.totalAmount);
+            setLoadingPrice(false);
+          })
+          .catch((err) => {
+            console.error("Lỗi khi tính tổng tiền:", err);
+            setLoadingPrice(false);
+          });
+      }
+    }, 2000);
+
+    return () => clearTimeout(timeout);
+  }, [
+    selectedRoom,
+    checkInDate,
+    checkOutDate,
+    isEditable,
+    bookingDetail.checkInDate,
+    bookingDetail.checkOutDate,
+    bookingDetail.roomNumber,
+  ]);
 
   const handleSaveChanges = async () => {
     const checkInInput = (
@@ -76,14 +133,10 @@ export default function BookingDetailModal({
     };
 
     const bookingId = parseInt(bookingDetail.bookingId.toString(), 10);
-    const totalPrice = parseInt(
-      bookingDetail.totalPrice.toString().replace(/\D/g, ""),
-      10
-    );
 
     const payload = {
       bookingId: bookingId,
-      fullName: bookingDetail.fullName, // chỉ để hiển thị thôi, backend không dùng
+      fullName: bookingDetail.fullName,
       roomNumber: selectedRoom,
       checkInDate: formatDate(checkInInput),
       checkOutDate: formatDate(checkOutInput),
@@ -115,6 +168,8 @@ export default function BookingDetailModal({
       toast.error("Cập nhật thất bại!");
     }
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className={styles.modalOverlay}>
@@ -167,7 +222,8 @@ export default function BookingDetailModal({
             <input
               type="date"
               name="checkInDate"
-              defaultValue={toInputDate(bookingDetail.checkInDate)}
+              value={checkInDate}
+              onChange={(e) => setCheckInDate(e.target.value)}
               className={styles.editableInput}
             />
           )}
@@ -182,7 +238,8 @@ export default function BookingDetailModal({
             <input
               type="date"
               name="checkOutDate"
-              defaultValue={toInputDate(bookingDetail.checkOutDate)}
+              value={checkOutDate}
+              onChange={(e) => setCheckOutDate(e.target.value)}
               className={styles.editableInput}
             />
           )}
@@ -217,10 +274,16 @@ export default function BookingDetailModal({
             <input
               type="text"
               name="totalPrice"
-              defaultValue={
-                bookingDetail.totalPrice.toLocaleString("vi-VN") + " VND"
+              value={
+                loadingPrice
+                  ? "Đang tính toán ..."
+                  : totalPrice.toLocaleString("vi-VN") + " VND"
               }
-              className={`${styles.editableInput} ${styles.greenBorderInput}`}
+              className={`${styles.editableInput} ${
+                loadingPrice
+                  ? styles.yellowBorderInput
+                  : styles.greenBorderInput
+              }`}
               readOnly
             />
           )}

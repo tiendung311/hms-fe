@@ -104,3 +104,7 @@
 .greenBorderInput {
   border: 2px solid var(--main-green);
 }
+
+.yellowBorderInput {
+  border: 2px solid #ffd700;
+}
