@@ -6,7 +6,8 @@ import styles from "./style.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import ServiceEditModal from "@/app/components/admin/services/ServiceEditModal";
+import { ToastContainer } from "react-toastify";
 
 interface Service {
   id: number;
@@ -17,22 +18,24 @@ interface Service {
 
 export default function ServiceManage() {
   const [services, setServices] = useState<Service[]>([]);
-  const router = useRouter();
+  const [selectedServiceId, setSelectedServiceId] = useState<number | null>(
+    null
+  );
+
+  const fetchServices = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/admin/room-type-services"
+      );
+      if (!response.ok) throw new Error("Failed to fetch data");
+      const data = await response.json();
+      setServices(data);
+    } catch (error) {
+      console.error("Error fetching services:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:8080/api/admin/room-type-services"
-        );
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const data = await response.json();
-        setServices(data);
-      } catch (error) {
-        console.error("Error fetching services:", error);
-      }
-    };
-
     fetchServices();
   }, []);
 
@@ -72,9 +75,7 @@ export default function ServiceManage() {
                           icon={faPen}
                           className={`${styles.icon} ${styles.edit}`}
                           onClick={() =>
-                            router.push(
-                              `/admin/services/edit/${service.serviceId}`
-                            )
+                            setSelectedServiceId(service.serviceId)
                           }
                         />
                       </td>
@@ -86,6 +87,26 @@ export default function ServiceManage() {
           </div>
         </div>
       </div>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+      />
+
+      {selectedServiceId && (
+        <ServiceEditModal
+          id={selectedServiceId}
+          onClose={() => setSelectedServiceId(null)}
+          onUpdate={() => {
+            setSelectedServiceId(null);
+            fetchServices();
+          }}
+        />
+      )}
     </div>
   );
 }
