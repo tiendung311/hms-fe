@@ -4,11 +4,7 @@ import AdminHeader from "@/app/components/AdminHeader";
 import AdminSidebar from "@/app/components/AdminSidebar";
 import styles from "./style.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPen,
-  faRotateLeft,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faRotateLeft, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import AdminPagination from "../AdminPagination";
 import ConfirmDeleteModal from "@/app/components/ConfirmDeleteModal";
@@ -190,10 +186,6 @@ export default function CustomerManage() {
                       <td>{customer.fullName}</td>
                       <td>{customer.email}</td>
                       <td className={styles.actions}>
-                        <FontAwesomeIcon
-                          icon={faPen}
-                          className={`${styles.icon} ${styles.edit}`}
-                        />
                         <FontAwesomeIcon
                           icon={faTrash}
                           className={`${styles.icon} ${styles.delete}`}

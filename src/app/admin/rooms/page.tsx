@@ -6,10 +6,10 @@ import AdminSidebar from "@/app/components/AdminSidebar";
 import AdminPagination from "../AdminPagination";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPen,
   faTimes,
   faRotateLeft,
   faWrench,
+  faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./style.module.css";
 import { ToastContainer, toast } from "react-toastify";
@@ -364,15 +364,29 @@ export default function RoomManage() {
                         </span>
                       </td>
                       <td className={styles.actions}>
-                        <FontAwesomeIcon
-                          icon={faPen}
-                          className={`${styles.icon} ${styles.edit}`}
-                        />
-                        <FontAwesomeIcon
-                          icon={faWrench}
-                          className={`${styles.icon} ${styles.delete}`}
-                          onClick={() => toggleRoomMaintenance(room.roomNumber)}
-                        />
+                        {["Trống", "Đã đặt", "Chờ"].includes(
+                          room.roomStatus
+                        ) ? (
+                          <FontAwesomeIcon
+                            icon={faWrench}
+                            className={`${styles.icon} ${styles.delete}`}
+                            title="Chuyển sang bảo trì"
+                            onClick={() =>
+                              toggleRoomMaintenance(room.roomNumber)
+                            }
+                            style={{ cursor: "pointer" }}
+                          />
+                        ) : room.roomStatus === "Bảo trì" ? (
+                          <FontAwesomeIcon
+                            icon={faCheckCircle}
+                            className={styles.icon}
+                            title="Kết thúc bảo trì"
+                            onClick={() =>
+                              toggleRoomMaintenance(room.roomNumber)
+                            }
+                            style={{ color: "green", cursor: "pointer" }}
+                          />
+                        ) : null}
                       </td>
                     </tr>
                   ))
