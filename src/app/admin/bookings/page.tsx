@@ -65,20 +65,18 @@ export default function BookingManage() {
 
   const [bookings, setBookings] = useState<Booking[]>([]);
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:8080/api/admin/bookings"
-        );
-        if (!response.ok) throw new Error("Failed to fetch bookings");
-        const data = await response.json();
-        setBookings(data);
-      } catch (error) {
-        console.error("Error fetching bookings:", error);
-      }
-    };
+  const fetchBookings = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/admin/bookings");
+      if (!response.ok) throw new Error("Failed to fetch bookings");
+      const data = await response.json();
+      setBookings(data);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchBookings();
   }, []);
 
@@ -296,20 +294,13 @@ export default function BookingManage() {
             onPageChange={setCurrentPage}
           />
 
-          {selectedBooking && (
+          {selectedBooking && showModal && (
             <BookingDetailModal
               isOpen={showModal}
               onClose={() => setShowModal(false)}
-              bookingDetail={{
-                bookingId: selectedBooking.bookingId,
-                fullName: selectedBooking.fullName,
-                roomNumber: selectedBooking.roomNumber,
-                checkInDate: selectedBooking.checkInDate,
-                checkOutDate: selectedBooking.checkOutDate,
-                bookingStatus: selectedBooking.bookingStatus,
-                totalPrice: selectedBooking.totalPrice,
-              }}
+              bookingDetail={selectedBooking}
               isEditable={isEditMode}
+              onUpdate={fetchBookings}
             />
           )}
         </div>

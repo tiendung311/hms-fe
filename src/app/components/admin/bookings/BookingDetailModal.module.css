@@ -54,21 +54,42 @@
   width: 180px;
 }
 
+.btnGroup {
+  display: flex;
+  margin-top: 20px;
+  width: 100%;
+  justify-content: center;
+  gap: 10px;
+}
+
 .modalContent button {
   display: block;
-  margin: 20px auto 0;
   padding: 10px 20px;
-  background-color: var(--main-blue);
-  color: white;
-  border: none;
+  background-color: white;
   border-radius: 8px;
   cursor: pointer;
   font-size: 15px;
   transition: background-color 0.2s ease;
 }
 
-.modalContent button:hover {
-  background-color: #1e65ab;
+.saveBtn {
+  border: 1px solid var(--main-blue);
+  color: var(--main-blue);
+}
+
+.saveBtn:hover {
+  background-color: var(--main-blue);
+  color: white;
+}
+
+.backBtn {
+  border: 1px solid var(--main-red);
+  color: var(--main-red);
+}
+
+.backBtn:hover {
+  background-color: var(--main-red);
+  color: white;
 }
 
 .editableInput {

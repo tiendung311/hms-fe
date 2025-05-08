@@ -71,7 +71,9 @@ export default function EditService() {
         body: JSON.stringify({ services: selectedAmenities }),
       });
       toast.success("Cập nhật thành công!");
-      router.push("/admin/services");
+      setTimeout(() => {
+        router.push("/admin/services");
+      }, 2000);
     } catch (err) {
       console.error("Update failed:", err);
       toast.error("Cập nhật thất bại!");
