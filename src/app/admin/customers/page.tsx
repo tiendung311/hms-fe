@@ -189,6 +189,7 @@ export default function CustomerManage() {
                         <FontAwesomeIcon
                           icon={faTrash}
                           className={`${styles.icon} ${styles.delete}`}
+                          title="Xóa"
                           onClick={() => handleDeleteClick(customer.email)}
                         />
                       </td>

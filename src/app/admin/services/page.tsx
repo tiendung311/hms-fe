@@ -74,6 +74,7 @@ export default function ServiceManage() {
                         <FontAwesomeIcon
                           icon={faPen}
                           className={`${styles.icon} ${styles.edit}`}
+                          title="Cập nhật"
                           onClick={() =>
                             setSelectedServiceId(service.serviceId)
                           }

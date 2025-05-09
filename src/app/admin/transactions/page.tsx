@@ -6,22 +6,33 @@ import styles from "./style.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBuildingColumns,
-  faEye,
   faMoneyBillWave,
   faPen,
   faRotateLeft,
-  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import AdminPagination from "../AdminPagination";
+import { toast } from "react-toastify";
+import TransactionEditModal from "@/app/components/admin/transactions/TransactionEditModal";
 
 interface Transaction {
+  transactionId: number;
   fullName: string;
   roomNumber: string;
   paymentDate: string;
   paymentMethod: string;
   paymentStatus: string;
   amount: string;
+}
+
+interface TransactionDetail {
+  transactionId: number;
+  fullName: string;
+  roomNumber: string;
+  paymentDate: string;
+  paymentMethod: string;
+  paymentStatus: string;
+  amount: number;
 }
 
 const PAGE_SIZE = 10;
@@ -33,22 +44,21 @@ export default function TransactionManage() {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:8080/api/admin/payments"
-        );
-        const data = await response.json();
-        setTransactions(data);
-      } catch (error) {
-        console.error("Error fetching transactions:", error);
-      }
-    };
+  const fetchTransactions = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/admin/payments");
+      const data = await response.json();
+      setTransactions(data);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchTransactions();
   }, []);
 
+  // payment status: Chờ, Thành công, Thất bại, Hoàn tiền
   const [paymentStatuses, setPaymentStatuses] = useState<string[]>([]);
 
   useEffect(() => {
@@ -67,6 +77,7 @@ export default function TransactionManage() {
     fetchPaymentStatuses();
   });
 
+  // payment method: Chuyển khoản, Tiền mặt
   const [paymentMethods, setPaymentMethods] = useState<string[]>([]);
 
   useEffect(() => {
@@ -137,7 +148,7 @@ export default function TransactionManage() {
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "Chờ":
-        return { backgroundColor: "var(--main-blue)", color: "white" };
+        return { backgroundColor: "var(--main-yellow)", color: "white" };
       case "Thành công":
         return { backgroundColor: "var(--main-green)", color: "white" };
       case "Thất bại":
@@ -167,6 +178,25 @@ export default function TransactionManage() {
         );
       default:
         return null;
+    }
+  };
+
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<TransactionDetail | null>(null);
+  const [showModal, setShowModal] = useState<boolean>(false);
+
+  const handleViewDetail = async (id: number) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/admin/payments/${id}`
+      );
+      const data = await response.json();
+      setSelectedTransaction(data);
+      setShowModal(true);
+      console.log("Transaction detail:", data);
+    } catch (error) {
+      console.error("Error fetching transaction detail:", error);
+      toast.error("Lỗi khi tải chi tiết giao dịch!");
     }
   };
 
@@ -288,16 +318,12 @@ export default function TransactionManage() {
                       </td>
                       <td className={styles.actions}>
                         <FontAwesomeIcon
-                          icon={faEye}
-                          className={`${styles.icon} ${styles.view}`}
-                        />
-                        <FontAwesomeIcon
                           icon={faPen}
                           className={`${styles.icon} ${styles.edit}`}
-                        />
-                        <FontAwesomeIcon
-                          icon={faTrash}
-                          className={`${styles.icon} ${styles.delete}`}
+                          title="Cập nhật"
+                          onClick={() =>
+                            handleViewDetail(transaction.transactionId)
+                          }
                         />
                       </td>
                     </tr>
@@ -312,6 +338,15 @@ export default function TransactionManage() {
             currentPage={currentPage}
             onPageChange={setCurrentPage}
           />
+
+          {showModal && selectedTransaction && (
+            <TransactionEditModal
+              isOpen={showModal}
+              onClose={() => setShowModal(false)}
+              transactionDetail={selectedTransaction}
+              onUpdate={fetchTransactions}
+            />
+          )}
         </div>
       </div>
     </div>

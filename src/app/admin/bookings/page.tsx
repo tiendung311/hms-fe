@@ -269,6 +269,7 @@ export default function BookingManage() {
                         <FontAwesomeIcon
                           icon={faEye}
                           className={`${styles.icon} ${styles.view}`}
+                          title="Xem chi tiết"
                           onClick={() =>
                             handleViewDetail(booking.bookingId, false)
                           }
@@ -276,6 +277,7 @@ export default function BookingManage() {
                         <FontAwesomeIcon
                           icon={faPen}
                           className={`${styles.icon} ${styles.edit}`}
+                          title="Cập nhật"
                           onClick={() =>
                             handleViewDetail(booking.bookingId, true)
                           }
