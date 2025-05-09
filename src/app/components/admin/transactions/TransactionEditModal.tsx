@@ -20,7 +20,7 @@ interface TransactionEditModalProps {
 }
 
 const PAYMENT_METHODS = ["Tiền mặt", "Chuyển khoản"];
-const BASE_PAYMENT_STATUSES = ["Thành công", "Thất bại", "Hoàn tiền"];
+const PAYMENT_STATUSES = ["Thành công", "Thất bại", "Hoàn tiền"];
 
 export default function TransactionEditModal({
   isOpen,
@@ -68,8 +68,10 @@ export default function TransactionEditModal({
 
   const paymentStatusOptions =
     transactionDetail.paymentStatus === "Chờ"
-      ? ["Chờ", ...BASE_PAYMENT_STATUSES]
-      : BASE_PAYMENT_STATUSES;
+      ? PAYMENT_STATUSES.filter((status) => status !== "Hoàn tiền").concat(
+          "Chờ"
+        )
+      : PAYMENT_STATUSES;
 
   if (!isOpen) return null;
 
@@ -119,15 +121,20 @@ export default function TransactionEditModal({
           <strong>Phương thức thanh toán:</strong>
           <select
             name="paymentMethod"
-            value={selectedPaymentMethod}
+            value={selectedPaymentStatus === "Chờ" ? "" : selectedPaymentMethod}
             onChange={(e) => setSelectedPaymentMethod(e.target.value)}
             className={styles.editableInput}
+            disabled={selectedPaymentStatus === "Chờ"}
           >
-            {PAYMENT_METHODS.map((method) => (
-              <option key={method} value={method}>
-                {method}
-              </option>
-            ))}
+            {selectedPaymentStatus === "Chờ" ? (
+              <option value="">Chưa thanh toán</option>
+            ) : (
+              PAYMENT_METHODS.map((method) => (
+                <option key={method} value={method}>
+                  {method}
+                </option>
+              ))
+            )}
           </select>
         </p>
 
