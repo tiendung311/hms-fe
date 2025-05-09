@@ -20,7 +20,7 @@ interface TransactionEditModalProps {
 }
 
 const PAYMENT_METHODS = ["Tiền mặt", "Chuyển khoản"];
-const PAYMENT_STATUSES = ["Thành công", "Thất bại", "Hoàn tiền"];
+const BASE_PAYMENT_STATUSES = ["Thành công", "Thất bại", "Hoàn tiền"];
 
 export default function TransactionEditModal({
   isOpen,
@@ -65,6 +65,11 @@ export default function TransactionEditModal({
       toast.error("Cập nhật thất bại!");
     }
   };
+
+  const paymentStatusOptions =
+    transactionDetail.paymentStatus === "Chờ"
+      ? ["Chờ", ...BASE_PAYMENT_STATUSES]
+      : BASE_PAYMENT_STATUSES;
 
   if (!isOpen) return null;
 
@@ -135,7 +140,7 @@ export default function TransactionEditModal({
             onChange={(e) => setSelectedPaymentStatus(e.target.value)}
             className={styles.editableInput}
           >
-            {PAYMENT_STATUSES.map((status) => (
+            {paymentStatusOptions.map((status) => (
               <option key={status} value={status}>
                 {status}
               </option>
@@ -146,13 +151,29 @@ export default function TransactionEditModal({
         {/* Amount */}
         <p>
           <strong>Số tiền:</strong>
-          <input
-            type="text"
-            name="amount"
-            value={transactionDetail.amount.toLocaleString("vi-VN") + " VND"}
-            className={`${styles.editableInput} ${styles.greenBorderInput}`}
-            readOnly
-          />
+          {transactionDetail.paymentStatus === "Chờ" ? (
+            <button
+              className={styles.payNowButton}
+              onClick={() => {
+                // xử lý tạo thanh toán tại đây
+                toast.info("Thực hiện thanh toán tại quầy...");
+              }}
+            >
+              Thực hiện thanh toán
+            </button>
+          ) : (
+            <input
+              type="text"
+              name="amount"
+              value={
+                transactionDetail.amount != null
+                  ? transactionDetail.amount.toLocaleString("vi-VN") + " VND"
+                  : "Chưa thanh toán"
+              }
+              className={`${styles.editableInput} ${styles.greenBorderInput}`}
+              readOnly
+            />
+          )}
         </p>
 
         {/* Buttons */}

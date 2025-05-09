@@ -101,6 +101,23 @@
   margin-left: 10px;
 }
 
+.payNowButton {
+  background-color: white;
+  width: calc(100% - 170px);
+  border: 1px solid var(--main-green);
+  color: var(--main-green);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.2s ease;
+}
+
+.payNowButton:hover {
+  background-color: var(--main-green);
+  color: white;
+}
+
 .editableInput:focus {
   outline: none;
   border-color: var(--main-green);
