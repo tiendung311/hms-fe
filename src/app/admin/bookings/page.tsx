@@ -14,6 +14,7 @@ import {
 import styles from "./style.module.css";
 import { toast } from "react-toastify";
 import BookingDetailModal from "@/app/components/admin/bookings/BookingDetailModal";
+import BookingCreateModal from "@/app/components/admin/bookings/BookingCreateModal";
 
 const getStatusStyle = (status: string) => {
   switch (status) {
@@ -152,6 +153,8 @@ export default function BookingManage() {
     );
   });
 
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
   const totalPages = Math.ceil(filteredBookings.length / PAGE_SIZE);
   const currentBookings = filteredBookings.slice(
     (currentPage - 1) * PAGE_SIZE,
@@ -205,7 +208,10 @@ export default function BookingManage() {
                 Làm mới
               </button>
             </div>
-            <button className={styles.addButton}>
+            <button
+              className={styles.addButton}
+              onClick={() => setShowCreateModal(true)}
+            >
               <FontAwesomeIcon icon={faPlus} style={{ marginRight: 5 }} />
               Tạo mới
             </button>
@@ -302,6 +308,13 @@ export default function BookingManage() {
               onClose={() => setShowModal(false)}
               bookingDetail={selectedBooking}
               isEditable={isEditMode}
+              onUpdate={fetchBookings}
+            />
+          )}
+
+          {showCreateModal && (
+            <BookingCreateModal
+              onClose={() => setShowCreateModal(false)}
               onUpdate={fetchBookings}
             />
           )}
