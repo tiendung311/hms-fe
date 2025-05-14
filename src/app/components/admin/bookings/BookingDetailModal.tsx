@@ -29,25 +29,6 @@ export default function BookingDetailModal({
   isEditable = false,
   onUpdate,
 }: BookingDetailModalProps) {
-  const [roomNumbers, setRoomNumbers] = useState<string[]>([]);
-  const [selectedRoom, setSelectedRoom] = useState<string>(
-    bookingDetail.roomNumber
-  );
-
-  useEffect(() => {
-    if (isEditable) {
-      fetch("http://localhost:8080/api/admin/rooms/empty")
-        .then((res) => res.json())
-        .then((data: string[]) => {
-          const currentRoom = bookingDetail.roomNumber;
-          const filtered = data.filter((room) => room !== currentRoom);
-          const sortedRooms = [currentRoom, ...filtered];
-          setRoomNumbers(sortedRooms);
-        })
-        .catch((err) => console.error("Failed to fetch room numbers", err));
-    }
-  }, [isEditable, bookingDetail.roomNumber]);
-
   const toInputDate = (dateString: string): string => {
     if (!dateString.includes("/")) return dateString;
     const [day, month, year] = dateString.split("/");
@@ -60,6 +41,27 @@ export default function BookingDetailModal({
   const [checkOutDate, setCheckOutDate] = useState(
     toInputDate(bookingDetail.checkOutDate)
   );
+  const [roomNumbers, setRoomNumbers] = useState<string[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<string>(
+    bookingDetail.roomNumber
+  );
+
+  useEffect(() => {
+    if (isEditable) {
+      fetch(
+        `http://localhost:8080/api/admin/rooms/available?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`
+      )
+        .then((res) => res.json())
+        .then((data: string[]) => {
+          const currentRoom = bookingDetail.roomNumber;
+          const filtered = data.filter((room) => room !== currentRoom);
+          const sortedRooms = [currentRoom, ...filtered];
+          setRoomNumbers(sortedRooms);
+        })
+        .catch((err) => console.error("Failed to fetch room numbers", err));
+    }
+  }, [isEditable, bookingDetail.roomNumber, checkInDate, checkOutDate]);
+
   const [totalPrice, setTotalPrice] = useState<number>(
     bookingDetail.totalPrice
   );

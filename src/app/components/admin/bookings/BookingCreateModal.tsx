@@ -85,13 +85,17 @@ const BookingCreateModal: React.FC<BookingCreateModalProps> = ({
   const [roomNumbers, setRoomNumbers] = useState<string[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/admin/rooms/empty")
-      .then((res) => res.json())
-      .then((data: string[]) => {
-        setRoomNumbers(data);
-      })
-      .catch((err) => console.error("Failed to fetch room numbers", err));
-  }, []);
+    if (checkInDate && checkOutDate) {
+      fetch(
+        `http://localhost:8080/api/admin/rooms/available?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`
+      )
+        .then((res) => res.json())
+        .then((data: string[]) => {
+          setRoomNumbers(data);
+        })
+        .catch((err) => console.error("Failed to fetch available rooms", err));
+    }
+  }, [checkInDate, checkOutDate]);
 
   const today = new Date().toISOString().split("T")[0];
 
