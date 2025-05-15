@@ -73,6 +73,41 @@ export default function TransactionEditModal({
         )
       : PAYMENT_STATUSES;
 
+  const handleGoToPaymentPage = async () => {
+    try {
+      // Lấy bookingId từ đâu đó (ở đây giả sử transactionId = bookingId)
+      const transactionId = transactionDetail.transactionId;
+
+      // Gọi API POST không có body, mà truyền bookingId dưới dạng query param
+      const response = await fetch(
+        `http://localhost:8080/api/payments/create-link?transactionId=${transactionId}`,
+        {
+          method: "POST",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Lỗi khi tạo liên kết thanh toán");
+      }
+
+      const data = await response.json();
+
+      // Trong backend trả về obj có url (hoặc checkoutUrl) và orderCode
+      // Ở controller bạn nói trả về PayOSLinkResDTO gồm checkoutUrl và orderCode
+      // Vậy cần dùng data.checkoutUrl hoặc data.url, tùy tên biến trả về
+      const paymentUrl = data.url || data.checkoutUrl;
+
+      if (paymentUrl) {
+        window.location.href = paymentUrl;
+      } else {
+        toast.error("Không nhận được liên kết thanh toán");
+      }
+    } catch (error) {
+      console.error("Error creating payment link:", error);
+      toast.error("Tạo thanh toán thất bại!");
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -161,10 +196,7 @@ export default function TransactionEditModal({
           {transactionDetail.paymentStatus === "Chờ" ? (
             <button
               className={styles.payNowButton}
-              onClick={() => {
-                // xử lý tạo thanh toán tại đây
-                toast.info("Thực hiện thanh toán tại quầy...");
-              }}
+              onClick={handleGoToPaymentPage}
             >
               Thực hiện thanh toán
             </button>
