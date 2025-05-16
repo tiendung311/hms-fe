@@ -8,14 +8,16 @@ import {
   faIdCard,
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link";
 import { SignOutButton, useUser } from "@clerk/nextjs";
+import { useState } from "react";
+import UserEditModal from "./UserEditModal";
 
 export default function AdminHeader() {
   const { user } = useUser();
   const fullName = user
     ? `${user.lastName ?? ""} ${user.firstName ?? ""}`.trim()
     : "Người dùng";
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <div className="adminHeader">
@@ -34,10 +36,14 @@ export default function AdminHeader() {
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
-          <Link className="dropdown-item" href="/customer/profile">
+          <button
+            className="dropdown-item"
+            style={{ cursor: "pointer" }}
+            onClick={() => setShowModal(true)}
+          >
             Hồ sơ
             <FontAwesomeIcon className="icon" icon={faIdCard} />
-          </Link>
+          </button>
           <SignOutButton redirectUrl="/sign-in">
             <span className="dropdown-item" style={{ cursor: "pointer" }}>
               Đăng xuất
@@ -46,6 +52,8 @@ export default function AdminHeader() {
           </SignOutButton>
         </Dropdown.Menu>
       </Dropdown>
+
+      {showModal && <UserEditModal onClose={() => setShowModal(false)} />}
     </div>
   );
 }

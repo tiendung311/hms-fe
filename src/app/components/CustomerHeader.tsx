@@ -11,12 +11,15 @@ import {
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 import { SignOutButton, useUser } from "@clerk/nextjs";
+import { useState } from "react";
+import UserEditModal from "./UserEditModal";
 
 export default function CustomerHeader() {
   const { user } = useUser();
   const fullName = user
     ? `${user.lastName ?? ""} ${user.firstName ?? ""}`.trim()
     : "Người dùng";
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <div className="userHeader">
@@ -54,26 +57,43 @@ export default function CustomerHeader() {
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
-          <Link className="dropdown-item" href="/customer/profile">
-            Hồ sơ
-            <FontAwesomeIcon className="icon" icon={faIdCard} />
-          </Link>
-          <Link className="dropdown-item" href="/customer/activity">
-            Hoạt động
-            <FontAwesomeIcon className="icon" icon={faBell} />
-          </Link>
-          <Link className="dropdown-item" href="/customer/booking">
-            Đặt phòng
-            <FontAwesomeIcon className="icon" icon={faCalendarPlus} />
-          </Link>
-          <SignOutButton redirectUrl="/sign-in">
-            <span className="dropdown-item" style={{ cursor: "pointer" }}>
-              Đăng xuất
+          {user ? (
+            <>
+              <button
+                className="dropdown-item"
+                style={{ cursor: "pointer" }}
+                onClick={() => setShowModal(true)}
+              >
+                Hồ sơ
+                <FontAwesomeIcon className="icon" icon={faIdCard} />
+              </button>
+              <Link className="dropdown-item" href="/customer/activity">
+                Hoạt động
+                <FontAwesomeIcon className="icon" icon={faBell} />
+              </Link>
+              <Link className="dropdown-item" href="/customer/booking">
+                Đặt phòng
+                <FontAwesomeIcon className="icon" icon={faCalendarPlus} />
+              </Link>
+              <SignOutButton redirectUrl="/sign-in">
+                <span className="dropdown-item" style={{ cursor: "pointer" }}>
+                  Đăng xuất
+                  <FontAwesomeIcon className="icon" icon={faRightFromBracket} />
+                </span>
+              </SignOutButton>
+            </>
+          ) : (
+            <Link className="dropdown-item" href="/sign-in">
+              Đăng nhập
               <FontAwesomeIcon className="icon" icon={faRightFromBracket} />
-            </span>
-          </SignOutButton>
+            </Link>
+          )}
         </Dropdown.Menu>
       </Dropdown>
+
+      {user && showModal && (
+        <UserEditModal onClose={() => setShowModal(false)} />
+      )}
     </div>
   );
 }
