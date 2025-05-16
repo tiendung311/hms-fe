@@ -26,9 +26,23 @@
   width: 100%;
 }
 
-.payos {
+.tools {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.payos,
+.clerk {
   background-color: rgba(172, 172, 172, 0.8);
   border-radius: 20px;
+}
+
+.clerk {
+  display: flex;
+  justify-content: center;
+  padding: 5px;
 }
 
 h3 {

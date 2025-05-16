@@ -23,8 +23,16 @@ export default function Footer() {
             <p>Sky bar</p>
             <p>Ẩm thực Michelin</p>
           </div>
-          <div className="detail">
+          <div className="detail tools">
             <h3>Liên kết</h3>
+            <div className="clerk">
+              <Image
+                src="/assets/clerk-logo.png"
+                alt="clerk"
+                width={120}
+                height={50}
+              />
+            </div>
             <div className="payos">
               <Image
                 src="/assets/payos-logo.png"

@@ -41,7 +41,7 @@ export default function RoomCard({
       />
       <p>
         Phòng: <FontAwesomeIcon icon={faUser} style={{ marginRight: "5px" }} />
-        {type === "double" && <FontAwesomeIcon icon={faUser} />}
+        {type === "Đôi" && <FontAwesomeIcon icon={faUser} />}
       </p>
       <p>
         Sao:{" "}
