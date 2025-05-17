@@ -8,8 +8,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateLeft, faSearch } from "@fortawesome/free-solid-svg-icons";
 import RoomFilter from "@/app/components/customer/rooms/RoomFilter";
 import { ToastContainer, toast } from "react-toastify";
+import RoomDetail from "@/app/components/customer/rooms/RoomDetail";
 
 interface RoomAvailableDTO {
+  roomTypeId: number;
   roomName: string;
   services: string[];
   price: number;
@@ -37,14 +39,25 @@ export default function Booking() {
   const [isClient, setIsClient] = useState(false);
   const today = new Date().toISOString().split("T")[0];
   const [filteredRooms, setFilteredRooms] = useState<RoomWithMock[]>([]);
+
   const [initialMinPrice, setInitialMinPrice] = useState(0);
   const [initialMaxPrice, setInitialMaxPrice] = useState(0);
+
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedRoomDetail, setSelectedRoomDetail] =
+    useState<RoomWithMock | null>(null);
+
+  const [checkInDate, setCheckInDate] = useState("");
+  const [checkOutDate, setCheckOutDate] = useState("");
 
   const searchRooms = async () => {
     const checkIn = (document.getElementById("check-in") as HTMLInputElement)
       .value;
     const checkOut = (document.getElementById("check-out") as HTMLInputElement)
       .value;
+
+    setCheckInDate(checkIn);
+    setCheckOutDate(checkOut);
 
     if (!checkIn || !checkOut) {
       toast.warning("Vui lòng chọn ngày nhận và trả phòng!");
@@ -350,6 +363,10 @@ export default function Booking() {
                   comments={room.comments}
                   amenities={room.services.join(", ")}
                   price={room.price}
+                  onViewDetail={() => {
+                    setSelectedRoomDetail(room);
+                    setShowDetailModal(true);
+                  }}
                 />
               ))
             ) : (
@@ -360,6 +377,25 @@ export default function Booking() {
           </div>
         </div>
       </div>
+
+      {selectedRoomDetail && (
+        <RoomDetail
+          show={showDetailModal}
+          onHide={() => setShowDetailModal(false)}
+          room={{
+            roomTypeId: selectedRoomDetail.roomTypeId,
+            image: selectedRoomDetail.image,
+            name: selectedRoomDetail.roomName,
+            reviews: selectedRoomDetail.reviews,
+            rating: selectedRoomDetail.rating,
+            comments: selectedRoomDetail.comments,
+            amenities: selectedRoomDetail.services.join(", "),
+            price: selectedRoomDetail.price,
+          }}
+          checkIn={checkInDate}
+          checkOut={checkOutDate}
+        />
+      )}
 
       <ToastContainer
         position="top-right"

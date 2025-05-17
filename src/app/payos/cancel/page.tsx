@@ -20,6 +20,12 @@ export default function PaymentCancelPage() {
       }, 3000); // chuyển hướng sau 3 giây
 
       return () => clearTimeout(timer); // cleanup khi component unmount
+    } else {
+      const timer = setTimeout(() => {
+        router.push("/home");
+      }, 3000); // chuyển hướng sau 3 giây
+
+      return () => clearTimeout(timer); // cleanup khi component unmount
     }
   }, [user, isLoaded, router]);
 

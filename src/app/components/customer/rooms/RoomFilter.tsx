@@ -11,6 +11,7 @@ interface RoomProps {
   comments: string[];
   amenities: string;
   price: number;
+  onViewDetail: () => void;
 }
 
 export default function RoomFilter({
@@ -21,6 +22,7 @@ export default function RoomFilter({
   comments,
   amenities,
   price,
+  onViewDetail,
 }: RoomProps) {
   const truncatedAmenities =
     amenities.length > 30 ? amenities.substring(0, 30) + "..." : amenities;
@@ -78,7 +80,11 @@ export default function RoomFilter({
           <span className={styles.roomPrice}>
             {price.toLocaleString("vi-VN")}₫ / đêm
           </span>
-          <Button variant="warning" className={styles.viewBtn}>
+          <Button
+            variant="warning"
+            className={styles.viewBtn}
+            onClick={onViewDetail}
+          >
             Xem phòng &gt;
           </Button>
         </div>
