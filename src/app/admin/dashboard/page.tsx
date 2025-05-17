@@ -10,8 +10,57 @@ import {
   faMoneyBillTrendUp,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useState } from "react";
 
 export default function Dashboard() {
+  const [totalRevenue, setTotalRevenue] = useState<number>(0);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/admin/total-amount/success")
+      .then((res) => res.json())
+      .then((data) => {
+        setTotalRevenue(data);
+      })
+      .catch((err) => console.error("Lỗi lấy tổng doanh thu:", err));
+  }, []);
+
+  const [monthlyRevenue, setMonthlyRevenue] = useState<number>(0);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/admin/total-amount/month/now")
+      .then((res) => res.json())
+      .then((data) => {
+        setMonthlyRevenue(data);
+      })
+      .catch((err) => console.error("Lỗi lấy doanh thu tháng:", err));
+  }, []);
+
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString("vi-VN") + "₫";
+  };
+
+  const [totalUsers, setTotalUsers] = useState<number>(0);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/admin/total-users")
+      .then((res) => res.json())
+      .then((data) => {
+        setTotalUsers(data);
+      })
+      .catch((err) => console.error("Lỗi lấy tổng người dùng:", err));
+  }, []);
+
+  const [totalRooms, setTotalRooms] = useState<number>(0);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/admin/total-rooms")
+      .then((res) => res.json())
+      .then((data) => {
+        setTotalRooms(data);
+      })
+      .catch((err) => console.error("Lỗi lấy tổng phòng:", err));
+  }, []);
+
   return (
     <div className={styles.dashboardContainer}>
       <AdminSidebar />
@@ -26,7 +75,7 @@ export default function Dashboard() {
             >
               <p>Tổng doanh thu</p>
               <FontAwesomeIcon className={styles.icon} icon={faMoneyBills} />
-              <h3>20.850.000₫</h3>
+              <h3>{formatCurrency(totalRevenue)}</h3>
             </div>
             <div
               className={styles.statCard}
@@ -37,7 +86,7 @@ export default function Dashboard() {
                 className={styles.icon}
                 icon={faMoneyBillTrendUp}
               />
-              <h3>3.800.000₫</h3>
+              <h3>{formatCurrency(monthlyRevenue)}</h3>
             </div>
             <div
               className={styles.statCard}
@@ -45,7 +94,7 @@ export default function Dashboard() {
             >
               <p>Tổng số khách hàng</p>
               <FontAwesomeIcon className={styles.icon} icon={faUsers} />
-              <h3>120</h3>
+              <h3>{totalUsers}</h3>
             </div>
             <div
               className={styles.statCard}
@@ -53,7 +102,7 @@ export default function Dashboard() {
             >
               <p>Tổng số phòng</p>
               <FontAwesomeIcon className={styles.icon} icon={faBed} />
-              <h3>30</h3>
+              <h3>{totalRooms}</h3>
             </div>
           </div>
           <div className={styles.chartContainer}>
