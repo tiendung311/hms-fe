@@ -22,29 +22,26 @@ interface RevenueData {
 }
 
 const generateRevenueData = (): RevenueData[] => {
-  const data: RevenueData[] = [];
-  const startYear = 2024;
-  const endYear = 2025;
+  // Danh sách tháng từ 11/2024 đến 05/2025
+  const months = [
+    "2024-11",
+    "2024-12",
+    "2025-01",
+    "2025-02",
+    "2025-03",
+    "2025-04",
+    "2025-05",
+  ];
 
-  const currentDate = new Date(startYear, 0);
+  // Phân bổ doanh thu sao cho tổng = 24 triệu VND
+  const revenues = [
+    3000000, 3000000, 4000000, 2000000, 4000000, 4000000, 4000000,
+  ]; // Tổng = 24 triệu
 
-  while (
-    currentDate.getFullYear() <= endYear &&
-    (currentDate.getFullYear() < endYear ||
-      currentDate.getMonth() <= new Date().getMonth())
-  ) {
-    const formattedDate = `${currentDate.getFullYear()}-${String(
-      currentDate.getMonth() + 1
-    ).padStart(2, "0")}`;
-
-    const revenue = Math.floor(Math.random() * 100000000) + 1000000;
-
-    data.push({ date: formattedDate, revenue });
-
-    currentDate.setMonth(currentDate.getMonth() + 1);
-  }
-
-  return data;
+  return months.map((month, index) => ({
+    date: month,
+    revenue: revenues[index],
+  }));
 };
 
 const RevenueChart: React.FC<RevenueChartProps> = ({ fromDate, toDate }) => {

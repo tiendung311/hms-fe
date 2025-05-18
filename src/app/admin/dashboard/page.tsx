@@ -234,7 +234,7 @@ export default function Dashboard() {
           },
           title: {
             display: true,
-            text: "Doanh thu các tháng gần đây",
+            text: "Doanh thu các tháng 2025",
             font: {
               size: 18,
             },

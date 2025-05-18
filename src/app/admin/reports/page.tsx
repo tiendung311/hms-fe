@@ -14,8 +14,13 @@ import AdminHeader from "@/app/components/AdminHeader";
 import RevenueChart from "@/app/components/admin/reports/RevenueChart";
 
 export default function Report() {
-  const [fromDate, setFromDate] = useState("2024-01");
-  const [toDate, setToDate] = useState("2025-04");
+  const now = new Date();
+  const currentMonth = `${now.getFullYear()}-${String(
+    now.getMonth() + 1
+  ).padStart(2, "0")}`;
+
+  const [fromDate, setFromDate] = useState("2024-11");
+  const [toDate, setToDate] = useState(currentMonth);
 
   const handleDateChange =
     (setter: (value: string) => void) =>
@@ -24,8 +29,8 @@ export default function Report() {
     };
 
   const handleReset = () => {
-    setFromDate("2024-01");
-    setToDate("2025-04");
+    setFromDate("2024-11");
+    setToDate(currentMonth);
   };
 
   return (
