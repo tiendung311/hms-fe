@@ -10,7 +10,24 @@ import {
   faMoneyBillTrendUp,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import {
+  Chart,
+  ArcElement,
+  PieController,
+  Tooltip,
+  Legend,
+  Title,
+} from "chart.js";
+Chart.register(ArcElement, PieController, Tooltip, Legend, Title);
+
+type Booking = {
+  fullName: string;
+  roomNumber: string;
+  checkInDate: string;
+  checkOutDate: string;
+  bookingStatus: string;
+};
 
 export default function Dashboard() {
   const [totalRevenue, setTotalRevenue] = useState<number>(0);
@@ -61,6 +78,176 @@ export default function Dashboard() {
       .catch((err) => console.error("Lỗi lấy tổng phòng:", err));
   }, []);
 
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [allBookings, setAllBookings] = useState<Booking[]>([]);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/admin/bookings");
+        if (!res.ok) throw new Error("Failed to fetch bookings");
+        const data = await res.json();
+        setAllBookings(data);
+        setBookings(data.slice(0, 5)); // lấy 5 bản ghi đầu tiên
+      } catch (err) {
+        console.error("Lỗi lấy danh sách booking:", err);
+      }
+    };
+
+    fetchBookings();
+  }, []);
+
+  const getStatusClass = (status: string) => {
+    switch (status) {
+      case "Chờ":
+        return styles.pending;
+      case "Xác nhận":
+        return styles.confirmed;
+      case "Nhận phòng":
+        return styles.checkedIn;
+      case "Trả phòng":
+        return styles.completed;
+      case "Hủy":
+      case "Đã hủy":
+        return styles.cancelled;
+      default:
+        return "";
+    }
+  };
+
+  const [activities, setActivities] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/admin/activity-log")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setActivities(data);
+        } else if (Array.isArray(data.activities)) {
+          setActivities(data.activities);
+        } else {
+          console.error("Dữ liệu không đúng định dạng:", data);
+          setActivities([]);
+        }
+      })
+      .catch((err) => {
+        console.error("Lỗi lấy thông báo:", err);
+        setActivities([]);
+      });
+  }, []);
+
+  const chartRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    if (!chartRef.current || allBookings.length === 0) return;
+
+    const statusCount: { [key: string]: number } = {};
+    allBookings.forEach((b) => {
+      statusCount[b.bookingStatus] = (statusCount[b.bookingStatus] || 0) + 1;
+    });
+
+    const labels = Object.keys(statusCount);
+    const data = Object.values(statusCount);
+
+    const chart = new Chart(chartRef.current, {
+      type: "pie",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Số lượng theo trạng thái",
+            data,
+            backgroundColor: [
+              "#ffc107", // Chờ
+              "#0d6efd", // Xác nhận
+              "#198754", // Nhận phòng
+              "#6f42c1", // Trả phòng
+              "#dc3545", // Hủy
+            ],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true,
+            position: "bottom",
+          },
+          title: {
+            display: true,
+            text: "Thống kê trạng thái đặt phòng",
+            font: {
+              size: 18,
+            },
+          },
+        },
+      },
+    });
+
+    return () => {
+      chart.destroy();
+    };
+  }, [allBookings]);
+
+  const chartRef2 = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    if (!chartRef2.current) return;
+
+    // Dữ liệu mẫu: doanh thu 6 tháng gần đây
+    const labels = [
+      "Tháng 1",
+      "Tháng 2",
+      "Tháng 3",
+      "Tháng 4",
+      "Tháng 5",
+      "Tháng 6",
+    ];
+    const data = [4, 3, 4, 5, 3, 6];
+
+    const chart = new Chart(chartRef2.current, {
+      type: "pie",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Doanh thu theo tháng (triệu)",
+            data,
+            backgroundColor: [
+              "#4dc9f6",
+              "#f67019",
+              "#f53794",
+              "#537bc4",
+              "#acc236",
+              "#166a8f",
+            ],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true,
+            position: "bottom",
+          },
+          title: {
+            display: true,
+            text: "Doanh thu các tháng gần đây",
+            font: {
+              size: 18,
+            },
+          },
+        },
+      },
+    });
+
+    return () => {
+      chart.destroy();
+    };
+  }, []);
+
   return (
     <div className={styles.dashboardContainer}>
       <AdminSidebar />
@@ -105,9 +292,16 @@ export default function Dashboard() {
               <h3>{totalRooms}</h3>
             </div>
           </div>
+
           <div className={styles.chartContainer}>
-            <canvas id="revenueChart"></canvas>
+            <div className={styles.chartBox}>
+              <canvas ref={chartRef}></canvas>
+            </div>
+            <div className={styles.chartBox}>
+              <canvas ref={chartRef2}></canvas>
+            </div>
           </div>
+
           <div className={styles.tables}>
             <div className={styles.tableContainer}>
               <h3>Đặt phòng gần đây</h3>
@@ -121,45 +315,27 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>Nguyễn Văn B</td>
-                    <td>201</td>
-                    <td>02/11/2025 - 04/11/2025</td>
-                    <td className={styles.pending}>Chờ</td>
-                  </tr>
-                  <tr>
-                    <td>Nguyễn Văn B</td>
-                    <td>201</td>
-                    <td>02/11/2025 - 04/11/2025</td>
-                    <td className={styles.confirmed}>Xác nhận</td>
-                  </tr>
-                  <tr>
-                    <td>Nguyễn Văn B</td>
-                    <td>201</td>
-                    <td>02/11/2025 - 04/11/2025</td>
-                    <td className={styles.checkedIn}>Nhận phòng</td>
-                  </tr>
-                  <tr>
-                    <td>Nguyễn Văn B</td>
-                    <td>201</td>
-                    <td>02/11/2025 - 04/11/2025</td>
-                    <td className={styles.cancelled}>Hủy phòng</td>
-                  </tr>
-                  <tr>
-                    <td>Nguyễn Văn B</td>
-                    <td>201</td>
-                    <td>02/11/2025 - 04/11/2025</td>
-                    <td className={styles.completed}>Trả phòng</td>
-                  </tr>
+                  {bookings.map((booking, index) => (
+                    <tr key={index}>
+                      <td>{booking.fullName}</td>
+                      <td>{booking.roomNumber}</td>
+                      <td>{`${booking.checkInDate} - ${booking.checkOutDate}`}</td>
+                      <td className={getStatusClass(booking.bookingStatus)}>
+                        {booking.bookingStatus}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
             <div className={styles.notifications}>
               <h3>Thông báo</h3>
               <ul>
-                <li>Phòng 203 đã cập nhật trạng thái bảo trì</li>
-                <li>Phòng 303 đã cập nhật trạng thái phòng trống</li>
-                <li>Phòng 204 đã cập nhật trạng thái đã đặt</li>
+                {activities.length === 0 ? (
+                  <li>Không có thông báo nào gần đây.</li>
+                ) : (
+                  activities.map((msg, index) => <li key={index}>{msg}</li>)
+                )}
               </ul>
             </div>
           </div>

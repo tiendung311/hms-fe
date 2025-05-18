@@ -42,7 +42,6 @@
 .chartContainer,
 .tableContainer,
 .notifications {
-  border: 1px solid var(--main-blue);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   border-radius: 10px;
 }
@@ -52,6 +51,15 @@
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.chartBox {
+  width: 80%;
+  flex: 1;
 }
 
 .tables {
@@ -73,7 +81,7 @@
 }
 
 .notifications {
-  flex: 1;
+  flex: 0.98;
   background: white;
   padding: 15px;
   border-radius: 8px;
