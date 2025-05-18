@@ -24,7 +24,7 @@ const getStatusStyle = (status: string) => {
   );
 };
 
-type BookingDetailProps = {
+export type BookingDetailProps = {
   booking: {
     roomType: string;
     roomNumber: string;
