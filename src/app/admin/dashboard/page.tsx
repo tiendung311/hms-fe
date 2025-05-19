@@ -20,6 +20,7 @@ import {
   Title,
 } from "chart.js";
 import { useFetchWithAuth } from "@/app/utils/api";
+import RequireAdmin from "@/app/components/RequireAdmin";
 Chart.register(ArcElement, PieController, Tooltip, Legend, Title);
 
 type Booking = {
@@ -278,98 +279,100 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className={styles.dashboardContainer}>
-      <AdminSidebar />
-      <div className={styles.mainContent}>
-        <AdminHeader />
-        <div className={styles.content}>
-          <h2 className={styles.title}>Thống kê</h2>
-          <div className={styles.stats}>
-            <div
-              className={styles.statCard}
-              style={{ backgroundColor: "var(--main-blue)" }}
-            >
-              <p>Tổng doanh thu</p>
-              <FontAwesomeIcon className={styles.icon} icon={faMoneyBills} />
-              <h3>{formatCurrency(totalRevenue)}</h3>
+    <RequireAdmin>
+      <div className={styles.dashboardContainer}>
+        <AdminSidebar />
+        <div className={styles.mainContent}>
+          <AdminHeader />
+          <div className={styles.content}>
+            <h2 className={styles.title}>Thống kê</h2>
+            <div className={styles.stats}>
+              <div
+                className={styles.statCard}
+                style={{ backgroundColor: "var(--main-blue)" }}
+              >
+                <p>Tổng doanh thu</p>
+                <FontAwesomeIcon className={styles.icon} icon={faMoneyBills} />
+                <h3>{formatCurrency(totalRevenue)}</h3>
+              </div>
+              <div
+                className={styles.statCard}
+                style={{ backgroundColor: "var(--main-green)" }}
+              >
+                <p>Doanh thu tháng</p>
+                <FontAwesomeIcon
+                  className={styles.icon}
+                  icon={faMoneyBillTrendUp}
+                />
+                <h3>{formatCurrency(monthlyRevenue)}</h3>
+              </div>
+              <div
+                className={styles.statCard}
+                style={{ backgroundColor: "var(--main-yellow)" }}
+              >
+                <p>Tổng số khách hàng</p>
+                <FontAwesomeIcon className={styles.icon} icon={faUsers} />
+                <h3>{totalUsers}</h3>
+              </div>
+              <div
+                className={styles.statCard}
+                style={{ backgroundColor: "var(--main-red)" }}
+              >
+                <p>Tổng số phòng</p>
+                <FontAwesomeIcon className={styles.icon} icon={faBed} />
+                <h3>{totalRooms}</h3>
+              </div>
             </div>
-            <div
-              className={styles.statCard}
-              style={{ backgroundColor: "var(--main-green)" }}
-            >
-              <p>Doanh thu tháng</p>
-              <FontAwesomeIcon
-                className={styles.icon}
-                icon={faMoneyBillTrendUp}
-              />
-              <h3>{formatCurrency(monthlyRevenue)}</h3>
-            </div>
-            <div
-              className={styles.statCard}
-              style={{ backgroundColor: "var(--main-yellow)" }}
-            >
-              <p>Tổng số khách hàng</p>
-              <FontAwesomeIcon className={styles.icon} icon={faUsers} />
-              <h3>{totalUsers}</h3>
-            </div>
-            <div
-              className={styles.statCard}
-              style={{ backgroundColor: "var(--main-red)" }}
-            >
-              <p>Tổng số phòng</p>
-              <FontAwesomeIcon className={styles.icon} icon={faBed} />
-              <h3>{totalRooms}</h3>
-            </div>
-          </div>
 
-          <div className={styles.chartContainer}>
-            <div className={styles.chartBox}>
-              <canvas ref={chartRef}></canvas>
+            <div className={styles.chartContainer}>
+              <div className={styles.chartBox}>
+                <canvas ref={chartRef}></canvas>
+              </div>
+              <div className={styles.chartBox}>
+                <canvas ref={chartRef2}></canvas>
+              </div>
             </div>
-            <div className={styles.chartBox}>
-              <canvas ref={chartRef2}></canvas>
-            </div>
-          </div>
 
-          <div className={styles.tables}>
-            <div className={styles.tableContainer}>
-              <h3>Đặt phòng gần đây</h3>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>Họ tên</th>
-                    <th>Phòng</th>
-                    <th>Thời gian</th>
-                    <th>Trạng thái</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {bookings.map((booking, index) => (
-                    <tr key={index}>
-                      <td>{booking.fullName}</td>
-                      <td>{booking.roomNumber}</td>
-                      <td>{`${booking.checkInDate} - ${booking.checkOutDate}`}</td>
-                      <td className={getStatusClass(booking.bookingStatus)}>
-                        {booking.bookingStatus}
-                      </td>
+            <div className={styles.tables}>
+              <div className={styles.tableContainer}>
+                <h3>Đặt phòng gần đây</h3>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Họ tên</th>
+                      <th>Phòng</th>
+                      <th>Thời gian</th>
+                      <th>Trạng thái</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className={styles.notifications}>
-              <h3>Thông báo</h3>
-              <ul>
-                {activities.length === 0 ? (
-                  <li>Không có thông báo nào gần đây.</li>
-                ) : (
-                  activities.map((msg, index) => <li key={index}>{msg}</li>)
-                )}
-              </ul>
+                  </thead>
+                  <tbody>
+                    {bookings.map((booking, index) => (
+                      <tr key={index}>
+                        <td>{booking.fullName}</td>
+                        <td>{booking.roomNumber}</td>
+                        <td>{`${booking.checkInDate} - ${booking.checkOutDate}`}</td>
+                        <td className={getStatusClass(booking.bookingStatus)}>
+                          {booking.bookingStatus}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className={styles.notifications}>
+                <h3>Thông báo</h3>
+                <ul>
+                  {activities.length === 0 ? (
+                    <li>Không có thông báo nào gần đây.</li>
+                  ) : (
+                    activities.map((msg, index) => <li key={index}>{msg}</li>)
+                  )}
+                </ul>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </RequireAdmin>
   );
 }

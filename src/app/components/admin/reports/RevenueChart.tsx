@@ -10,6 +10,7 @@ import {
   Legend,
 } from "recharts";
 import styles from "./RevenueChart.module.css";
+import RequireAdmin from "../../RequireAdmin";
 
 interface RevenueChartProps {
   fromDate: string;
@@ -61,32 +62,37 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ fromDate, toDate }) => {
   };
 
   return (
-    <div className={styles.chartContainer}>
-      <h3 className={styles.chartTitle}>
-        {fromDate && toDate
-          ? `Doanh thu theo tháng từ ${fromDate} đến ${toDate}`
-          : "Doanh thu theo tháng"}
-      </h3>
+    <RequireAdmin>
+      <div className={styles.chartContainer}>
+        <h3 className={styles.chartTitle}>
+          {fromDate && toDate
+            ? `Doanh thu theo tháng từ ${fromDate} đến ${toDate}`
+            : "Doanh thu theo tháng"}
+        </h3>
 
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={filteredData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis tickFormatter={formatNumber} style={{ fontSize: "0.7rem" }} />
-          <Tooltip formatter={(value: number) => formatNumber(value)} />
-          <Legend
-            payload={[
-              {
-                value: "Doanh thu (VND)",
-                type: "square",
-                color: "var(--main-blue)",
-              },
-            ]}
-          />
-          <Bar dataKey="revenue" fill="var(--main-blue)" />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={filteredData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis
+              tickFormatter={formatNumber}
+              style={{ fontSize: "0.7rem" }}
+            />
+            <Tooltip formatter={(value: number) => formatNumber(value)} />
+            <Legend
+              payload={[
+                {
+                  value: "Doanh thu (VND)",
+                  type: "square",
+                  color: "var(--main-blue)",
+                },
+              ]}
+            />
+            <Bar dataKey="revenue" fill="var(--main-blue)" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </RequireAdmin>
   );
 };
 

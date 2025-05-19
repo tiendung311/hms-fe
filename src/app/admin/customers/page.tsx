@@ -10,6 +10,7 @@ import AdminPagination from "../AdminPagination";
 import ConfirmDeleteModal from "@/app/components/ConfirmDeleteModal";
 import { ToastContainer, toast } from "react-toastify";
 import { useFetchWithAuth } from "@/app/utils/api";
+import RequireAdmin from "@/app/components/RequireAdmin";
 
 interface Customer {
   id: number;
@@ -128,106 +129,109 @@ export default function CustomerManage() {
   };
 
   return (
-    <div className={styles.dashboardContainer}>
-      <AdminSidebar />
-      <div className={styles.mainContent}>
-        <AdminHeader />
-        <div className={styles.content}>
-          <h2 className={styles.title}>Quản lý khách hàng</h2>
+    <RequireAdmin>
+      <div className={styles.dashboardContainer}>
+        <AdminSidebar />
+        <div className={styles.mainContent}>
+          <AdminHeader />
+          <div className={styles.content}>
+            <h2 className={styles.title}>Quản lý khách hàng</h2>
 
-          <div className={styles.searchContainer}>
-            <select
-              className={styles.filterSelect}
-              value={searchFilter}
-              onChange={handleFilterChange}
-            >
-              {FILTER_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <div className={styles.searchContainer}>
+              <select
+                className={styles.filterSelect}
+                value={searchFilter}
+                onChange={handleFilterChange}
+              >
+                {FILTER_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
 
-            <input
-              type="text"
-              className={styles.searchInput}
-              placeholder={`Tìm kiếm theo ${
-                FILTER_OPTIONS.find((opt) => opt.value === searchFilter)?.label
-              }`}
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
-
-            <button className={styles.resetButton} onClick={handleReset}>
-              <FontAwesomeIcon
-                icon={faRotateLeft}
-                style={{ marginRight: 10 }}
+              <input
+                type="text"
+                className={styles.searchInput}
+                placeholder={`Tìm kiếm theo ${
+                  FILTER_OPTIONS.find((opt) => opt.value === searchFilter)
+                    ?.label
+                }`}
+                value={searchQuery}
+                onChange={handleSearchChange}
               />
-              Làm mới
-            </button>
-          </div>
 
-          <div className={styles.tableContainer}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Họ tên</th>
-                  <th>Email</th>
-                  <th>Hành động</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentCustomers.length === 0 ? (
-                  <tr key="no-data">
-                    <td colSpan={4} className={styles.emptyRow}>
-                      Không có dữ liệu
-                    </td>
+              <button className={styles.resetButton} onClick={handleReset}>
+                <FontAwesomeIcon
+                  icon={faRotateLeft}
+                  style={{ marginRight: 10 }}
+                />
+                Làm mới
+              </button>
+            </div>
+
+            <div className={styles.tableContainer}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>STT</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Hành động</th>
                   </tr>
-                ) : (
-                  currentCustomers.map((customer, index) => (
-                    <tr key={customer.id ?? `${customer.fullName}-${index}`}>
-                      <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
-                      <td>{customer.fullName}</td>
-                      <td>{customer.email}</td>
-                      <td className={styles.actions}>
-                        <FontAwesomeIcon
-                          icon={faTrash}
-                          className={`${styles.icon} ${styles.delete}`}
-                          title="Xóa"
-                          onClick={() => handleDeleteClick(customer.email)}
-                        />
+                </thead>
+                <tbody>
+                  {currentCustomers.length === 0 ? (
+                    <tr key="no-data">
+                      <td colSpan={4} className={styles.emptyRow}>
+                        Không có dữ liệu
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    currentCustomers.map((customer, index) => (
+                      <tr key={customer.id ?? `${customer.fullName}-${index}`}>
+                        <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
+                        <td>{customer.fullName}</td>
+                        <td>{customer.email}</td>
+                        <td className={styles.actions}>
+                          <FontAwesomeIcon
+                            icon={faTrash}
+                            className={`${styles.icon} ${styles.delete}`}
+                            title="Xóa"
+                            onClick={() => handleDeleteClick(customer.email)}
+                          />
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <ConfirmDeleteModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              onConfirm={handleConfirmDelete}
+              message="Bạn có chắc chắn muốn xóa khách hàng này?"
+            />
+
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              closeOnClick
+              pauseOnHover
+              draggable
+            />
+
+            <AdminPagination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+            />
           </div>
-
-          <ConfirmDeleteModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onConfirm={handleConfirmDelete}
-            message="Bạn có chắc chắn muốn xóa khách hàng này?"
-          />
-
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            closeOnClick
-            pauseOnHover
-            draggable
-          />
-
-          <AdminPagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-          />
         </div>
       </div>
-    </div>
+    </RequireAdmin>
   );
 }

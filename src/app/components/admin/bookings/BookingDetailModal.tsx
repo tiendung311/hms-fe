@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import styles from "./BookingDetailModal.module.css";
 import { toast, ToastContainer } from "react-toastify";
 import { useFetchWithAuth } from "@/app/utils/api";
+import RequireAdmin from "../../RequireAdmin";
 
 interface BookingDetailModalProps {
   isOpen: boolean;
@@ -184,144 +185,148 @@ export default function BookingDetailModal({
   if (!isOpen) return null;
 
   return (
-    <div className={styles.modalOverlay}>
-      <div className={styles.modalContent}>
-        <h2>Chi tiết đặt phòng</h2>
+    <RequireAdmin>
+      <div className={styles.modalOverlay}>
+        <div className={styles.modalContent}>
+          <h2>Chi tiết đặt phòng</h2>
 
-        {/* Full Name */}
-        <p>
-          <strong>Tên khách hàng:</strong>
-          {!isEditable ? (
-            <span>{bookingDetail.fullName}</span>
-          ) : (
-            <input
-              type="text"
-              name="fullName"
-              defaultValue={bookingDetail.fullName}
-              className={`${styles.editableInput} ${styles.greenBorderInput}`}
-              readOnly
-            />
-          )}
-        </p>
+          {/* Full Name */}
+          <p>
+            <strong>Tên khách hàng:</strong>
+            {!isEditable ? (
+              <span>{bookingDetail.fullName}</span>
+            ) : (
+              <input
+                type="text"
+                name="fullName"
+                defaultValue={bookingDetail.fullName}
+                className={`${styles.editableInput} ${styles.greenBorderInput}`}
+                readOnly
+              />
+            )}
+          </p>
 
-        {/* Room Number */}
-        <p>
-          <strong>Phòng:</strong>
-          {!isEditable ? (
-            <span>{bookingDetail.roomNumber}</span>
-          ) : (
-            <select
-              name="roomNumber"
-              value={selectedRoom}
-              onChange={(e) => setSelectedRoom(e.target.value)}
-              className={styles.editableInput}
-            >
-              {roomNumbers.map((roomNum) => (
-                <option key={roomNum} value={roomNum}>
-                  {roomNum}
-                </option>
-              ))}
-            </select>
-          )}
-        </p>
+          {/* Room Number */}
+          <p>
+            <strong>Phòng:</strong>
+            {!isEditable ? (
+              <span>{bookingDetail.roomNumber}</span>
+            ) : (
+              <select
+                name="roomNumber"
+                value={selectedRoom}
+                onChange={(e) => setSelectedRoom(e.target.value)}
+                className={styles.editableInput}
+              >
+                {roomNumbers.map((roomNum) => (
+                  <option key={roomNum} value={roomNum}>
+                    {roomNum}
+                  </option>
+                ))}
+              </select>
+            )}
+          </p>
 
-        {/* Check In Date */}
-        <p>
-          <strong>Ngày nhận phòng:</strong>
-          {!isEditable ? (
-            <span>{bookingDetail.checkInDate}</span>
-          ) : (
-            <input
-              type="date"
-              name="checkInDate"
-              value={checkInDate}
-              onChange={(e) => setCheckInDate(e.target.value)}
-              className={styles.editableInput}
-            />
-          )}
-        </p>
+          {/* Check In Date */}
+          <p>
+            <strong>Ngày nhận phòng:</strong>
+            {!isEditable ? (
+              <span>{bookingDetail.checkInDate}</span>
+            ) : (
+              <input
+                type="date"
+                name="checkInDate"
+                value={checkInDate}
+                onChange={(e) => setCheckInDate(e.target.value)}
+                className={styles.editableInput}
+              />
+            )}
+          </p>
 
-        {/* Check Out Date */}
-        <p>
-          <strong>Ngày trả phòng:</strong>
-          {!isEditable ? (
-            <span>{bookingDetail.checkOutDate}</span>
-          ) : (
-            <input
-              type="date"
-              name="checkOutDate"
-              value={checkOutDate}
-              onChange={(e) => setCheckOutDate(e.target.value)}
-              className={styles.editableInput}
-            />
-          )}
-        </p>
+          {/* Check Out Date */}
+          <p>
+            <strong>Ngày trả phòng:</strong>
+            {!isEditable ? (
+              <span>{bookingDetail.checkOutDate}</span>
+            ) : (
+              <input
+                type="date"
+                name="checkOutDate"
+                value={checkOutDate}
+                onChange={(e) => setCheckOutDate(e.target.value)}
+                className={styles.editableInput}
+              />
+            )}
+          </p>
 
-        {/* Booking Status */}
-        <p>
-          <strong>Trạng thái:</strong>
-          {!isEditable ? (
-            <span>{bookingDetail.bookingStatus}</span>
-          ) : (
-            <select
-              name="bookingStatus"
-              defaultValue={bookingDetail.bookingStatus}
-              className={styles.editableInput}
-            >
-              {STATUS_OPTIONS.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-          )}
-        </p>
+          {/* Booking Status */}
+          <p>
+            <strong>Trạng thái:</strong>
+            {!isEditable ? (
+              <span>{bookingDetail.bookingStatus}</span>
+            ) : (
+              <select
+                name="bookingStatus"
+                defaultValue={bookingDetail.bookingStatus}
+                className={styles.editableInput}
+              >
+                {STATUS_OPTIONS.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+            )}
+          </p>
 
-        {/* Total Price */}
-        <p>
-          <strong>Tổng số tiền:</strong>
-          {!isEditable ? (
-            <span>{bookingDetail.totalPrice.toLocaleString("vi-VN")} VND</span>
-          ) : (
-            <input
-              type="text"
-              name="totalPrice"
-              value={
-                loadingPrice
-                  ? "Đang tính toán ..."
-                  : totalPrice.toLocaleString("vi-VN") + " VND"
-              }
-              className={`${styles.editableInput} ${
-                loadingPrice
-                  ? styles.yellowBorderInput
-                  : styles.greenBorderInput
-              }`}
-              readOnly
-            />
-          )}
-        </p>
+          {/* Total Price */}
+          <p>
+            <strong>Tổng số tiền:</strong>
+            {!isEditable ? (
+              <span>
+                {bookingDetail.totalPrice.toLocaleString("vi-VN")} VND
+              </span>
+            ) : (
+              <input
+                type="text"
+                name="totalPrice"
+                value={
+                  loadingPrice
+                    ? "Đang tính toán ..."
+                    : totalPrice.toLocaleString("vi-VN") + " VND"
+                }
+                className={`${styles.editableInput} ${
+                  loadingPrice
+                    ? styles.yellowBorderInput
+                    : styles.greenBorderInput
+                }`}
+                readOnly
+              />
+            )}
+          </p>
 
-        {/* Buttons */}
-        <div className={styles.btnGroup}>
-          {isEditable && (
-            <button className={styles.saveBtn} onClick={handleSaveChanges}>
-              Lưu
+          {/* Buttons */}
+          <div className={styles.btnGroup}>
+            {isEditable && (
+              <button className={styles.saveBtn} onClick={handleSaveChanges}>
+                Lưu
+              </button>
+            )}
+            <button className={styles.backBtn} onClick={onClose}>
+              Đóng
             </button>
-          )}
-          <button className={styles.backBtn} onClick={onClose}>
-            Đóng
-          </button>
-        </div>
+          </div>
 
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          closeOnClick
-          pauseOnHover
-          draggable
-        />
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            closeOnClick
+            pauseOnHover
+            draggable
+          />
+        </div>
       </div>
-    </div>
+    </RequireAdmin>
   );
 }

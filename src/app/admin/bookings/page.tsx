@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 import BookingDetailModal from "@/app/components/admin/bookings/BookingDetailModal";
 import BookingCreateModal from "@/app/components/admin/bookings/BookingCreateModal";
 import { useFetchWithAuth } from "@/app/utils/api";
+import RequireAdmin from "@/app/components/RequireAdmin";
 
 const getStatusStyle = (status: string) => {
   switch (status) {
@@ -204,160 +205,162 @@ export default function BookingManage() {
   }
 
   return (
-    <div className={styles.dashboardContainer}>
-      <AdminSidebar />
-      <div className={styles.mainContent}>
-        <AdminHeader />
-        <div className={styles.content}>
-          <h2 className={styles.title}>Quản lý đặt phòng</h2>
+    <RequireAdmin>
+      <div className={styles.dashboardContainer}>
+        <AdminSidebar />
+        <div className={styles.mainContent}>
+          <AdminHeader />
+          <div className={styles.content}>
+            <h2 className={styles.title}>Quản lý đặt phòng</h2>
 
-          <div className={styles.functionContainer}>
-            <div className={styles.searchContainer}>
-              <input
-                type="text"
-                className={styles.searchInput}
-                placeholder="Tìm kiếm theo tên khách hàng..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-
-              <select
-                className={styles.filterSelect}
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-              >
-                <option value="">Trạng thái</option>
-                {bookingStatuses.length > 0 ? (
-                  bookingStatuses.map((status) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))
-                ) : (
-                  <option disabled>Chưa có dữ liệu trong danh sách</option>
-                )}
-              </select>
-
-              <button className={styles.resetButton} onClick={handleReset}>
-                <FontAwesomeIcon
-                  icon={faRotateLeft}
-                  style={{ marginRight: 5 }}
+            <div className={styles.functionContainer}>
+              <div className={styles.searchContainer}>
+                <input
+                  type="text"
+                  className={styles.searchInput}
+                  placeholder="Tìm kiếm theo tên khách hàng..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                Làm mới
+
+                <select
+                  className={styles.filterSelect}
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="">Trạng thái</option>
+                  {bookingStatuses.length > 0 ? (
+                    bookingStatuses.map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled>Chưa có dữ liệu trong danh sách</option>
+                  )}
+                </select>
+
+                <button className={styles.resetButton} onClick={handleReset}>
+                  <FontAwesomeIcon
+                    icon={faRotateLeft}
+                    style={{ marginRight: 5 }}
+                  />
+                  Làm mới
+                </button>
+              </div>
+              <button
+                className={styles.addButton}
+                onClick={() => setShowCreateModal(true)}
+              >
+                <FontAwesomeIcon icon={faPlus} style={{ marginRight: 5 }} />
+                Tạo mới
               </button>
             </div>
-            <button
-              className={styles.addButton}
-              onClick={() => setShowCreateModal(true)}
-            >
-              <FontAwesomeIcon icon={faPlus} style={{ marginRight: 5 }} />
-              Tạo mới
-            </button>
-          </div>
 
-          <div className={styles.dateFilterContainer}>
-            <div className={styles.dateGroup}>
-              <label className={styles.dateLabel}>Từ ngày:</label>
-              <input
-                type="date"
-                className={styles.dateInput}
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-              />
+            <div className={styles.dateFilterContainer}>
+              <div className={styles.dateGroup}>
+                <label className={styles.dateLabel}>Từ ngày:</label>
+                <input
+                  type="date"
+                  className={styles.dateInput}
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
+              </div>
+              <div className={styles.dateGroup} style={{ marginLeft: 50 }}>
+                <label className={styles.dateLabel}>Đến ngày:</label>
+                <input
+                  type="date"
+                  className={styles.dateInput}
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                />
+              </div>
             </div>
-            <div className={styles.dateGroup} style={{ marginLeft: 50 }}>
-              <label className={styles.dateLabel}>Đến ngày:</label>
-              <input
-                type="date"
-                className={styles.dateInput}
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-              />
-            </div>
-          </div>
 
-          <div className={styles.tableContainer}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Khách hàng</th>
-                  <th>Phòng</th>
-                  <th>Ngày nhận phòng</th>
-                  <th>Ngày trả phòng</th>
-                  <th>Trạng thái</th>
-                  <th>Hành động</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentBookings.length === 0 ? (
-                  <tr key="no-data">
-                    <td colSpan={7} className={styles.emptyRow}>
-                      Không có dữ liệu
-                    </td>
+            <div className={styles.tableContainer}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>STT</th>
+                    <th>Khách hàng</th>
+                    <th>Phòng</th>
+                    <th>Ngày nhận phòng</th>
+                    <th>Ngày trả phòng</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
                   </tr>
-                ) : (
-                  currentBookings.map((booking, index) => (
-                    <tr
-                      key={`${booking.roomNumber}-${booking.checkInDate}-${index}`}
-                    >
-                      <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
-                      <td>{booking.fullName}</td>
-                      <td>{booking.roomNumber}</td>
-                      <td>{booking.checkInDate}</td>
-                      <td>{booking.checkOutDate}</td>
-                      <td style={getStatusStyle(booking.bookingStatus)}>
-                        {booking.bookingStatus}
-                      </td>
-                      <td className={styles.actions}>
-                        <FontAwesomeIcon
-                          icon={faEye}
-                          className={`${styles.icon} ${styles.view}`}
-                          title="Xem chi tiết"
-                          onClick={() =>
-                            handleViewDetail(booking.bookingId, false)
-                          }
-                        />
-                        <FontAwesomeIcon
-                          icon={faPen}
-                          className={`${styles.icon} ${styles.edit}`}
-                          title="Cập nhật"
-                          onClick={() =>
-                            handleViewDetail(booking.bookingId, true)
-                          }
-                        />
+                </thead>
+                <tbody>
+                  {currentBookings.length === 0 ? (
+                    <tr key="no-data">
+                      <td colSpan={7} className={styles.emptyRow}>
+                        Không có dữ liệu
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    currentBookings.map((booking, index) => (
+                      <tr
+                        key={`${booking.roomNumber}-${booking.checkInDate}-${index}`}
+                      >
+                        <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
+                        <td>{booking.fullName}</td>
+                        <td>{booking.roomNumber}</td>
+                        <td>{booking.checkInDate}</td>
+                        <td>{booking.checkOutDate}</td>
+                        <td style={getStatusStyle(booking.bookingStatus)}>
+                          {booking.bookingStatus}
+                        </td>
+                        <td className={styles.actions}>
+                          <FontAwesomeIcon
+                            icon={faEye}
+                            className={`${styles.icon} ${styles.view}`}
+                            title="Xem chi tiết"
+                            onClick={() =>
+                              handleViewDetail(booking.bookingId, false)
+                            }
+                          />
+                          <FontAwesomeIcon
+                            icon={faPen}
+                            className={`${styles.icon} ${styles.edit}`}
+                            title="Cập nhật"
+                            onClick={() =>
+                              handleViewDetail(booking.bookingId, true)
+                            }
+                          />
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <AdminPagination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+            />
+
+            {selectedBooking && showModal && (
+              <BookingDetailModal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                bookingDetail={selectedBooking}
+                isEditable={isEditMode}
+                onUpdate={fetchBookings}
+              />
+            )}
+
+            {showCreateModal && (
+              <BookingCreateModal
+                onClose={() => setShowCreateModal(false)}
+                onUpdate={fetchBookings}
+              />
+            )}
           </div>
-
-          <AdminPagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-          />
-
-          {selectedBooking && showModal && (
-            <BookingDetailModal
-              isOpen={showModal}
-              onClose={() => setShowModal(false)}
-              bookingDetail={selectedBooking}
-              isEditable={isEditMode}
-              onUpdate={fetchBookings}
-            />
-          )}
-
-          {showCreateModal && (
-            <BookingCreateModal
-              onClose={() => setShowCreateModal(false)}
-              onUpdate={fetchBookings}
-            />
-          )}
         </div>
       </div>
-    </div>
+    </RequireAdmin>
   );
 }

@@ -15,6 +15,7 @@ import AdminPagination from "../AdminPagination";
 import { toast } from "react-toastify";
 import TransactionEditModal from "@/app/components/admin/transactions/TransactionEditModal";
 import { useFetchWithAuth } from "@/app/utils/api";
+import RequireAdmin from "@/app/components/RequireAdmin";
 
 interface Transaction {
   transactionId: number;
@@ -210,150 +211,152 @@ export default function TransactionManage() {
   }, [paymentFilter, statusFilter]);
 
   return (
-    <div className={styles.dashboardContainer}>
-      <AdminSidebar />
-      <div className={styles.mainContent}>
-        <AdminHeader />
-        <div className={styles.content}>
-          <h2 className={styles.title}>Quản lý giao dịch</h2>
+    <RequireAdmin>
+      <div className={styles.dashboardContainer}>
+        <AdminSidebar />
+        <div className={styles.mainContent}>
+          <AdminHeader />
+          <div className={styles.content}>
+            <h2 className={styles.title}>Quản lý giao dịch</h2>
 
-          <div className={styles.filterContainer}>
-            <input
-              type="text"
-              className={styles.searchInput}
-              placeholder="Tìm kiếm..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
-
-            <select
-              className={styles.filterSelect}
-              value={paymentFilter}
-              onChange={(e) => handleFilterChange(e, "payment")}
-            >
-              <option value="">Phương thức thanh toán</option>
-              {paymentMethods.length > 0 ? (
-                paymentMethods.map((method, index) => (
-                  <option key={index} value={method}>
-                    {method}
-                  </option>
-                ))
-              ) : (
-                <option disabled>Không có phương thức thanh toán</option>
-              )}
-            </select>
-
-            <select
-              className={styles.filterSelect}
-              value={statusFilter}
-              onChange={(e) => handleFilterChange(e, "status")}
-            >
-              <option value="">Trạng thái</option>
-              {paymentStatuses.length > 0 ? (
-                paymentStatuses.map((status, index) => (
-                  <option key={index} value={status}>
-                    {status}
-                  </option>
-                ))
-              ) : (
-                <option disabled>Không có trạng thái thanh toán</option>
-              )}
-            </select>
-
-            <button className={styles.resetButton} onClick={handleReset}>
-              <FontAwesomeIcon
-                icon={faRotateLeft}
-                style={{ marginRight: 10 }}
+            <div className={styles.filterContainer}>
+              <input
+                type="text"
+                className={styles.searchInput}
+                placeholder="Tìm kiếm..."
+                value={searchQuery}
+                onChange={handleSearchChange}
               />
-              Làm mới
-            </button>
-          </div>
 
-          <div className={styles.tableContainer}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Khách hàng</th>
-                  <th>Phòng</th>
-                  <th>Thời gian</th>
-                  <th>Phương thức</th>
-                  <th>Trạng thái</th>
-                  <th>Số tiền</th>
-                  <th>Hành động</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentTransactions.length === 0 ? (
-                  <tr key="no-data">
-                    <td colSpan={8} className={styles.emptyRow}>
-                      Không có dữ liệu
-                    </td>
-                  </tr>
+              <select
+                className={styles.filterSelect}
+                value={paymentFilter}
+                onChange={(e) => handleFilterChange(e, "payment")}
+              >
+                <option value="">Phương thức thanh toán</option>
+                {paymentMethods.length > 0 ? (
+                  paymentMethods.map((method, index) => (
+                    <option key={index} value={method}>
+                      {method}
+                    </option>
+                  ))
                 ) : (
-                  currentTransactions.map((transaction, index) => (
-                    <tr key={`${transaction.roomNumber}-${index}`}>
-                      <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
-                      <td>{transaction.fullName}</td>
-                      <td>{transaction.roomNumber}</td>
-                      <td>{transaction.paymentDate}</td>
-                      <td>
-                        {getPaymentIcon(transaction.paymentMethod)}{" "}
-                        {transaction.paymentMethod}
-                      </td>
-                      <td>
-                        <span
-                          style={{
-                            ...getStatusStyle(transaction.paymentStatus),
-                            padding: "5px 8px",
-                            borderRadius: "5px",
-                            display: "inline-block",
-                            textAlign: "center",
-                          }}
-                        >
-                          {transaction.paymentStatus}
-                        </span>
-                      </td>
-                      <td>
-                        {new Intl.NumberFormat("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                          minimumFractionDigits: 0,
-                        }).format(Number(transaction.amount))}
-                      </td>
-                      <td className={styles.actions}>
-                        <FontAwesomeIcon
-                          icon={faPen}
-                          className={`${styles.icon} ${styles.edit}`}
-                          title="Cập nhật"
-                          onClick={() =>
-                            handleViewDetail(transaction.transactionId)
-                          }
-                        />
+                  <option disabled>Không có phương thức thanh toán</option>
+                )}
+              </select>
+
+              <select
+                className={styles.filterSelect}
+                value={statusFilter}
+                onChange={(e) => handleFilterChange(e, "status")}
+              >
+                <option value="">Trạng thái</option>
+                {paymentStatuses.length > 0 ? (
+                  paymentStatuses.map((status, index) => (
+                    <option key={index} value={status}>
+                      {status}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>Không có trạng thái thanh toán</option>
+                )}
+              </select>
+
+              <button className={styles.resetButton} onClick={handleReset}>
+                <FontAwesomeIcon
+                  icon={faRotateLeft}
+                  style={{ marginRight: 10 }}
+                />
+                Làm mới
+              </button>
+            </div>
+
+            <div className={styles.tableContainer}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>STT</th>
+                    <th>Khách hàng</th>
+                    <th>Phòng</th>
+                    <th>Thời gian</th>
+                    <th>Phương thức</th>
+                    <th>Trạng thái</th>
+                    <th>Số tiền</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentTransactions.length === 0 ? (
+                    <tr key="no-data">
+                      <td colSpan={8} className={styles.emptyRow}>
+                        Không có dữ liệu
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ) : (
+                    currentTransactions.map((transaction, index) => (
+                      <tr key={`${transaction.roomNumber}-${index}`}>
+                        <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
+                        <td>{transaction.fullName}</td>
+                        <td>{transaction.roomNumber}</td>
+                        <td>{transaction.paymentDate}</td>
+                        <td>
+                          {getPaymentIcon(transaction.paymentMethod)}{" "}
+                          {transaction.paymentMethod}
+                        </td>
+                        <td>
+                          <span
+                            style={{
+                              ...getStatusStyle(transaction.paymentStatus),
+                              padding: "5px 8px",
+                              borderRadius: "5px",
+                              display: "inline-block",
+                              textAlign: "center",
+                            }}
+                          >
+                            {transaction.paymentStatus}
+                          </span>
+                        </td>
+                        <td>
+                          {new Intl.NumberFormat("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                            minimumFractionDigits: 0,
+                          }).format(Number(transaction.amount))}
+                        </td>
+                        <td className={styles.actions}>
+                          <FontAwesomeIcon
+                            icon={faPen}
+                            className={`${styles.icon} ${styles.edit}`}
+                            title="Cập nhật"
+                            onClick={() =>
+                              handleViewDetail(transaction.transactionId)
+                            }
+                          />
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
 
-          <AdminPagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-          />
-
-          {showModal && selectedTransaction && (
-            <TransactionEditModal
-              isOpen={showModal}
-              onClose={() => setShowModal(false)}
-              transactionDetail={selectedTransaction}
-              onUpdate={fetchTransactions}
+            <AdminPagination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
             />
-          )}
+
+            {showModal && selectedTransaction && (
+              <TransactionEditModal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                transactionDetail={selectedTransaction}
+                onUpdate={fetchTransactions}
+              />
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </RequireAdmin>
   );
 }

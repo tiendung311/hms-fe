@@ -3,6 +3,7 @@ import styles from "./BookingCreateModal.module.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useFetchWithAuth } from "@/app/utils/api";
+import RequireAdmin from "../../RequireAdmin";
 
 interface BookingCreateModalProps {
   onClose: () => void;
@@ -172,124 +173,128 @@ const BookingCreateModal: React.FC<BookingCreateModalProps> = ({
   };
 
   return (
-    <div className={styles.modalOverlay}>
-      <div className={styles.modalContent}>
-        <h2>Tạo đặt phòng mới</h2>
+    <RequireAdmin>
+      <div className={styles.modalOverlay}>
+        <div className={styles.modalContent}>
+          <h2>Tạo đặt phòng mới</h2>
 
-        {/* Email */}
-        <p>
-          <strong>Email:</strong>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={styles.editableInput}
-            placeholder="example@email.com"
+          {/* Email */}
+          <p>
+            <strong>Email:</strong>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={styles.editableInput}
+              placeholder="example@email.com"
+            />
+          </p>
+
+          {/* Full Name */}
+          <p>
+            <strong>Tên khách hàng:</strong>
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className={`${styles.editableInput} ${styles.greenBorderInput}`}
+              readOnly
+            />
+          </p>
+
+          {/* Check-in Date */}
+          <p>
+            <strong>Ngày nhận phòng:</strong>
+            <input
+              type="date"
+              value={checkInDate}
+              min={today}
+              onChange={(e) => setCheckInDate(e.target.value)}
+              className={styles.editableInput}
+            />
+          </p>
+
+          {/* Check-out Date */}
+          <p>
+            <strong>Ngày trả phòng:</strong>
+            <input
+              type="date"
+              value={checkOutDate}
+              min={checkInDate || today}
+              onChange={(e) => setCheckOutDate(e.target.value)}
+              className={styles.editableInput}
+            />
+          </p>
+
+          {/* Room Number */}
+          <p>
+            <strong>Phòng:</strong>
+            <select
+              value={roomNumber}
+              onChange={(e) => setRoomNumber(e.target.value)}
+              className={styles.editableInput}
+            >
+              <option value="">-- Chọn phòng --</option>
+              {roomNumbers.map((num) => (
+                <option key={num} value={num}>
+                  {num}
+                </option>
+              ))}
+            </select>
+          </p>
+
+          {/* Room Type */}
+          <p>
+            <strong>Loại phòng:</strong>
+            <input
+              type="text"
+              value={roomType}
+              onChange={(e) => setRoomType(e.target.value)}
+              readOnly
+              className={`${styles.editableInput} ${styles.greenBorderInput}`}
+            />
+          </p>
+
+          {/* Total Price */}
+          <p>
+            <strong>Tổng tiền:</strong>
+            <input
+              type="text"
+              value={
+                loadingPrice
+                  ? "Đang tính toán ..."
+                  : totalPrice.toLocaleString("vi-VN") + " VND"
+              }
+              className={`${styles.editableInput} ${
+                loadingPrice
+                  ? styles.yellowBorderInput
+                  : styles.greenBorderInput
+              }`}
+              readOnly
+            />
+          </p>
+
+          {/* Buttons */}
+          <div className={styles.btnGroup}>
+            <button className={styles.saveBtn} onClick={handleCreate}>
+              Lưu
+            </button>
+            <button className={styles.backBtn} onClick={onClose}>
+              Đóng
+            </button>
+          </div>
+
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            closeOnClick
+            pauseOnHover
+            draggable
           />
-        </p>
-
-        {/* Full Name */}
-        <p>
-          <strong>Tên khách hàng:</strong>
-          <input
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            className={`${styles.editableInput} ${styles.greenBorderInput}`}
-            readOnly
-          />
-        </p>
-
-        {/* Check-in Date */}
-        <p>
-          <strong>Ngày nhận phòng:</strong>
-          <input
-            type="date"
-            value={checkInDate}
-            min={today}
-            onChange={(e) => setCheckInDate(e.target.value)}
-            className={styles.editableInput}
-          />
-        </p>
-
-        {/* Check-out Date */}
-        <p>
-          <strong>Ngày trả phòng:</strong>
-          <input
-            type="date"
-            value={checkOutDate}
-            min={checkInDate || today}
-            onChange={(e) => setCheckOutDate(e.target.value)}
-            className={styles.editableInput}
-          />
-        </p>
-
-        {/* Room Number */}
-        <p>
-          <strong>Phòng:</strong>
-          <select
-            value={roomNumber}
-            onChange={(e) => setRoomNumber(e.target.value)}
-            className={styles.editableInput}
-          >
-            <option value="">-- Chọn phòng --</option>
-            {roomNumbers.map((num) => (
-              <option key={num} value={num}>
-                {num}
-              </option>
-            ))}
-          </select>
-        </p>
-
-        {/* Room Type */}
-        <p>
-          <strong>Loại phòng:</strong>
-          <input
-            type="text"
-            value={roomType}
-            onChange={(e) => setRoomType(e.target.value)}
-            readOnly
-            className={`${styles.editableInput} ${styles.greenBorderInput}`}
-          />
-        </p>
-
-        {/* Total Price */}
-        <p>
-          <strong>Tổng tiền:</strong>
-          <input
-            type="text"
-            value={
-              loadingPrice
-                ? "Đang tính toán ..."
-                : totalPrice.toLocaleString("vi-VN") + " VND"
-            }
-            className={`${styles.editableInput} ${
-              loadingPrice ? styles.yellowBorderInput : styles.greenBorderInput
-            }`}
-            readOnly
-          />
-        </p>
-
-        {/* Buttons */}
-        <div className={styles.btnGroup}>
-          <button className={styles.saveBtn} onClick={handleCreate}>
-            Lưu
-          </button>
-          <button className={styles.backBtn} onClick={onClose}>
-            Đóng
-          </button>
         </div>
-
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          closeOnClick
-          pauseOnHover
-          draggable
-        />
       </div>
-    </div>
+    </RequireAdmin>
   );
 };
 

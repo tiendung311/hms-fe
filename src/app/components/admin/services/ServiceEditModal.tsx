@@ -6,6 +6,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import styles from "./ServiceEditModal.module.css";
 import { useFetchWithAuth } from "@/app/utils/api";
+import RequireAdmin from "../../RequireAdmin";
 
 interface ServiceEditModalProps {
   id: number;
@@ -93,69 +94,71 @@ export default function ServiceEditModal({
   if (!id) return <div>Lỗi: ID không hợp lệ.</div>;
 
   return (
-    <div className={styles.modalOverlay}>
-      <div className={styles.modalContent}>
-        <h2>Chỉnh sửa dịch vụ</h2>
+    <RequireAdmin>
+      <div className={styles.modalOverlay}>
+        <div className={styles.modalContent}>
+          <h2>Chỉnh sửa dịch vụ</h2>
 
-        <p>
-          <strong>Loại phòng:</strong>
-          <input
-            type="text"
-            className={styles.editableInput}
-            value={roomType}
-            disabled
-          />
-        </p>
+          <p>
+            <strong>Loại phòng:</strong>
+            <input
+              type="text"
+              className={styles.editableInput}
+              value={roomType}
+              disabled
+            />
+          </p>
 
-        <p>
-          <strong>Chọn tiện ích:</strong>
-          <select
-            className={styles.editableInput}
-            onChange={handleAmenitySelect}
-            disabled={
-              availableAmenities.length === 0 ||
-              selectedAmenities.length === availableAmenities.length
-            }
-          >
-            <option value="">-- Chọn --</option>
-            {availableAmenities.map((amenity) => (
-              <option
-                key={amenity}
-                value={amenity}
-                disabled={selectedAmenities.includes(amenity)}
-              >
-                {amenity}
-              </option>
-            ))}
-          </select>
-        </p>
+          <p>
+            <strong>Chọn tiện ích:</strong>
+            <select
+              className={styles.editableInput}
+              onChange={handleAmenitySelect}
+              disabled={
+                availableAmenities.length === 0 ||
+                selectedAmenities.length === availableAmenities.length
+              }
+            >
+              <option value="">-- Chọn --</option>
+              {availableAmenities.map((amenity) => (
+                <option
+                  key={amenity}
+                  value={amenity}
+                  disabled={selectedAmenities.includes(amenity)}
+                >
+                  {amenity}
+                </option>
+              ))}
+            </select>
+          </p>
 
-        <div style={{ marginBottom: "10px" }}>
-          {selectedAmenities.length > 0 ? (
-            selectedAmenities.map((amenity) => (
-              <span key={amenity} className={styles.amenityTag}>
-                {amenity}
-                <FontAwesomeIcon
-                  icon={faTimes}
-                  className={styles.removeIcon}
-                  onClick={() => removeAmenity(amenity)}
-                />
-              </span>
-            ))
-          ) : (
-            <span className={styles.placeholder}>Không có tiện ích nào</span>
-          )}
-        </div>
+          <div style={{ marginBottom: "10px" }}>
+            {selectedAmenities.length > 0 ? (
+              selectedAmenities.map((amenity) => (
+                <span key={amenity} className={styles.amenityTag}>
+                  {amenity}
+                  <FontAwesomeIcon
+                    icon={faTimes}
+                    className={styles.removeIcon}
+                    onClick={() => removeAmenity(amenity)}
+                  />
+                </span>
+              ))
+            ) : (
+              <span className={styles.placeholder}>Không có tiện ích nào</span>
+            )}
+          </div>
 
-        <div className={styles.btnGroup}>
-          <button className={`${styles.saveBtn}`} onClick={handleUpdate}>
-            Cập nhật
-          </button>
-          <button className={`${styles.backBtn}`} onClick={onClose}>
-            Quay về
-          </button>
+          <div className={styles.btnGroup}>
+            <button className={`${styles.saveBtn}`} onClick={handleUpdate}>
+              Cập nhật
+            </button>
+            <button className={`${styles.backBtn}`} onClick={onClose}>
+              Quay về
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </RequireAdmin>
   );
 }

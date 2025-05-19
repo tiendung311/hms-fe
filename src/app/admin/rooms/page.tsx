@@ -14,6 +14,7 @@ import {
 import styles from "./style.module.css";
 import { ToastContainer, toast } from "react-toastify";
 import { useFetchWithAuth } from "@/app/utils/api";
+import RequireAdmin from "@/app/components/RequireAdmin";
 
 interface Room {
   roomNumber: string;
@@ -230,195 +231,201 @@ export default function RoomManage() {
   }, [debouncedSearchQuery, roomTypeFilter, statusFilter, selectedAmenities]);
 
   return (
-    <div className={styles.dashboardContainer}>
-      <AdminSidebar />
-      <div className={styles.mainContent}>
-        <AdminHeader />
-        <div className={styles.content}>
-          <h2 className={styles.title}>Quản lý phòng</h2>
+    <RequireAdmin>
+      <div className={styles.dashboardContainer}>
+        <AdminSidebar />
+        <div className={styles.mainContent}>
+          <AdminHeader />
+          <div className={styles.content}>
+            <h2 className={styles.title}>Quản lý phòng</h2>
 
-          <div className={styles.searchContainer}>
-            <input
-              type="text"
-              className={styles.searchInput}
-              placeholder="Tìm kiếm theo số phòng..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
+            <div className={styles.searchContainer}>
+              <input
+                type="text"
+                className={styles.searchInput}
+                placeholder="Tìm kiếm theo số phòng..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
 
-            <select
-              className={styles.filterSelect}
-              value={roomTypeFilter}
-              onChange={(e) => handleFilterChange(e, setRoomTypeFilter)}
-            >
-              <option value="">Loại phòng</option>
-              {roomTypes.length > 0 ? (
-                roomTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))
-              ) : (
-                <option disabled>Chưa có dữ liệu trong danh sách</option>
-              )}
-            </select>
-
-            <select
-              className={styles.filterSelect}
-              value={statusFilter}
-              onChange={(e) => handleFilterChange(e, setStatusFilter)}
-            >
-              <option value="">Trạng thái</option>
-              {roomStatuses.length > 0 ? (
-                roomStatuses.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))
-              ) : (
-                <option disabled>Chưa có dữ liệu trong danh sách</option>
-              )}
-            </select>
-
-            <button className={styles.resetButton} onClick={handleReset}>
-              <FontAwesomeIcon icon={faRotateLeft} style={{ marginRight: 5 }} />
-              Làm mới
-            </button>
-          </div>
-
-          <div className={styles.amenityFilterContainer}>
-            <select
-              className={styles.filterSelect}
-              id="amenitySelect"
-              onChange={handleAmenitySelect}
-              disabled={
-                services.length === 0 ||
-                selectedAmenities.length === services.length
-              }
-            >
-              <option value="">Chọn tiện ích</option>
-              {services.map((amenity) => (
-                <option
-                  key={amenity}
-                  value={amenity}
-                  disabled={selectedAmenities.includes(amenity)}
-                >
-                  {amenity}
-                </option>
-              ))}
-            </select>
-
-            <div className={styles.selectedAmenitiesBox}>
-              {selectedAmenities.length > 0 ? (
-                selectedAmenities.map((amenity) => (
-                  <span key={amenity} className={styles.amenityTag}>
-                    {amenity}
-                    <FontAwesomeIcon
-                      icon={faTimes}
-                      className={styles.removeIcon}
-                      onClick={() => removeAmenity(amenity)}
-                    />
-                  </span>
-                ))
-              ) : (
-                <span className={styles.placeholder}>
-                  Không có tiện ích nào
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className={styles.tableContainer}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Phòng</th>
-                  <th>Loại phòng</th>
-                  <th>Tiện ích</th>
-                  <th>Trạng thái</th>
-                  <th>Hành động</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentRooms.length === 0 ? (
-                  <tr key="no-data">
-                    <td colSpan={6} className={styles.emptyRow}>
-                      Không có dữ liệu
-                    </td>
-                  </tr>
+              <select
+                className={styles.filterSelect}
+                value={roomTypeFilter}
+                onChange={(e) => handleFilterChange(e, setRoomTypeFilter)}
+              >
+                <option value="">Loại phòng</option>
+                {roomTypes.length > 0 ? (
+                  roomTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))
                 ) : (
-                  currentRooms.map((room, index) => (
-                    <tr key={`${room.roomNumber}-${index}`}>
-                      <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
-                      <td>{room.roomNumber}</td>
-                      <td>{room.roomType}</td>
-                      <td>
-                        {room.roomServices?.join(", ") ?? "Không có tiện nghi"}
-                      </td>
-                      <td className={styles.status}>
-                        <span
-                          className={
-                            room.roomStatus === "Trống"
-                              ? styles.textGreen
-                              : room.roomStatus === "Đã đặt"
-                              ? styles.textRed
-                              : room.roomStatus === "Chờ"
-                              ? styles.textOrange
-                              : styles.textGrey
-                          }
-                        >
-                          {room.roomStatus}
-                        </span>
-                      </td>
-                      <td className={styles.actions}>
-                        {["Trống", "Đã đặt", "Chờ"].includes(
-                          room.roomStatus
-                        ) ? (
-                          <FontAwesomeIcon
-                            icon={faWrench}
-                            className={`${styles.icon} ${styles.delete}`}
-                            title="Chuyển sang bảo trì"
-                            onClick={() =>
-                              toggleRoomMaintenance(room.roomNumber)
-                            }
-                            style={{ cursor: "pointer" }}
-                          />
-                        ) : room.roomStatus === "Bảo trì" ? (
-                          <FontAwesomeIcon
-                            icon={faCheckCircle}
-                            className={styles.icon}
-                            title="Kết thúc bảo trì"
-                            onClick={() =>
-                              toggleRoomMaintenance(room.roomNumber)
-                            }
-                            style={{ color: "green", cursor: "pointer" }}
-                          />
-                        ) : null}
+                  <option disabled>Chưa có dữ liệu trong danh sách</option>
+                )}
+              </select>
+
+              <select
+                className={styles.filterSelect}
+                value={statusFilter}
+                onChange={(e) => handleFilterChange(e, setStatusFilter)}
+              >
+                <option value="">Trạng thái</option>
+                {roomStatuses.length > 0 ? (
+                  roomStatuses.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>Chưa có dữ liệu trong danh sách</option>
+                )}
+              </select>
+
+              <button className={styles.resetButton} onClick={handleReset}>
+                <FontAwesomeIcon
+                  icon={faRotateLeft}
+                  style={{ marginRight: 5 }}
+                />
+                Làm mới
+              </button>
+            </div>
+
+            <div className={styles.amenityFilterContainer}>
+              <select
+                className={styles.filterSelect}
+                id="amenitySelect"
+                onChange={handleAmenitySelect}
+                disabled={
+                  services.length === 0 ||
+                  selectedAmenities.length === services.length
+                }
+              >
+                <option value="">Chọn tiện ích</option>
+                {services.map((amenity) => (
+                  <option
+                    key={amenity}
+                    value={amenity}
+                    disabled={selectedAmenities.includes(amenity)}
+                  >
+                    {amenity}
+                  </option>
+                ))}
+              </select>
+
+              <div className={styles.selectedAmenitiesBox}>
+                {selectedAmenities.length > 0 ? (
+                  selectedAmenities.map((amenity) => (
+                    <span key={amenity} className={styles.amenityTag}>
+                      {amenity}
+                      <FontAwesomeIcon
+                        icon={faTimes}
+                        className={styles.removeIcon}
+                        onClick={() => removeAmenity(amenity)}
+                      />
+                    </span>
+                  ))
+                ) : (
+                  <span className={styles.placeholder}>
+                    Không có tiện ích nào
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.tableContainer}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>STT</th>
+                    <th>Phòng</th>
+                    <th>Loại phòng</th>
+                    <th>Tiện ích</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentRooms.length === 0 ? (
+                    <tr key="no-data">
+                      <td colSpan={6} className={styles.emptyRow}>
+                        Không có dữ liệu
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    currentRooms.map((room, index) => (
+                      <tr key={`${room.roomNumber}-${index}`}>
+                        <td>{(currentPage - 1) * PAGE_SIZE + index + 1}</td>
+                        <td>{room.roomNumber}</td>
+                        <td>{room.roomType}</td>
+                        <td>
+                          {room.roomServices?.join(", ") ??
+                            "Không có tiện nghi"}
+                        </td>
+                        <td className={styles.status}>
+                          <span
+                            className={
+                              room.roomStatus === "Trống"
+                                ? styles.textGreen
+                                : room.roomStatus === "Đã đặt"
+                                ? styles.textRed
+                                : room.roomStatus === "Chờ"
+                                ? styles.textOrange
+                                : styles.textGrey
+                            }
+                          >
+                            {room.roomStatus}
+                          </span>
+                        </td>
+                        <td className={styles.actions}>
+                          {["Trống", "Đã đặt", "Chờ"].includes(
+                            room.roomStatus
+                          ) ? (
+                            <FontAwesomeIcon
+                              icon={faWrench}
+                              className={`${styles.icon} ${styles.delete}`}
+                              title="Chuyển sang bảo trì"
+                              onClick={() =>
+                                toggleRoomMaintenance(room.roomNumber)
+                              }
+                              style={{ cursor: "pointer" }}
+                            />
+                          ) : room.roomStatus === "Bảo trì" ? (
+                            <FontAwesomeIcon
+                              icon={faCheckCircle}
+                              className={styles.icon}
+                              title="Kết thúc bảo trì"
+                              onClick={() =>
+                                toggleRoomMaintenance(room.roomNumber)
+                              }
+                              style={{ color: "green", cursor: "pointer" }}
+                            />
+                          ) : null}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              closeOnClick
+              pauseOnHover
+              draggable
+            />
+
+            <AdminPagination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+            />
           </div>
-
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            closeOnClick
-            pauseOnHover
-            draggable
-          />
-
-          <AdminPagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-          />
         </div>
       </div>
-    </div>
+    </RequireAdmin>
   );
 }

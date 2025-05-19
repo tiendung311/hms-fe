@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import ServiceEditModal from "@/app/components/admin/services/ServiceEditModal";
 import { ToastContainer } from "react-toastify";
 import { useFetchWithAuth } from "@/app/utils/api";
+import RequireAdmin from "@/app/components/RequireAdmin";
 
 interface Service {
   id: number;
@@ -43,74 +44,76 @@ export default function ServiceManage() {
   }, [fetchWithAuth]);
 
   return (
-    <div className={styles.dashboardContainer}>
-      <AdminSidebar />
-      <div className={styles.mainContent}>
-        <AdminHeader />
-        <div className={styles.content}>
-          <h2 className={styles.title}>Quản lý dịch vụ</h2>
+    <RequireAdmin>
+      <div className={styles.dashboardContainer}>
+        <AdminSidebar />
+        <div className={styles.mainContent}>
+          <AdminHeader />
+          <div className={styles.content}>
+            <h2 className={styles.title}>Quản lý dịch vụ</h2>
 
-          <div className={styles.tableContainer}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Loại phòng</th>
-                  <th>Dịch vụ</th>
-                  <th>Hành động</th>
-                </tr>
-              </thead>
-              <tbody>
-                {services.length === 0 ? (
-                  <tr key="no-data">
-                    <td colSpan={4} className={styles.emptyRow}>
-                      Không có dữ liệu
-                    </td>
+            <div className={styles.tableContainer}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>STT</th>
+                    <th>Loại phòng</th>
+                    <th>Dịch vụ</th>
+                    <th>Hành động</th>
                   </tr>
-                ) : (
-                  services.map((service, index) => (
-                    <tr key={service.id ?? `${service.roomType}-${index}`}>
-                      <td>{index + 1}</td>
-                      <td>{service.roomType}</td>
-                      <td>{service.services.join(", ")}</td>
-                      <td className={styles.actions}>
-                        <FontAwesomeIcon
-                          icon={faPen}
-                          className={`${styles.icon} ${styles.edit}`}
-                          title="Cập nhật"
-                          onClick={() =>
-                            setSelectedServiceId(service.serviceId)
-                          }
-                        />
+                </thead>
+                <tbody>
+                  {services.length === 0 ? (
+                    <tr key="no-data">
+                      <td colSpan={4} className={styles.emptyRow}>
+                        Không có dữ liệu
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    services.map((service, index) => (
+                      <tr key={service.id ?? `${service.roomType}-${index}`}>
+                        <td>{index + 1}</td>
+                        <td>{service.roomType}</td>
+                        <td>{service.services.join(", ")}</td>
+                        <td className={styles.actions}>
+                          <FontAwesomeIcon
+                            icon={faPen}
+                            className={`${styles.icon} ${styles.edit}`}
+                            title="Cập nhật"
+                            onClick={() =>
+                              setSelectedServiceId(service.serviceId)
+                            }
+                          />
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
 
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        closeOnClick
-        pauseOnHover
-        draggable
-      />
-
-      {selectedServiceId && (
-        <ServiceEditModal
-          id={selectedServiceId}
-          onClose={() => setSelectedServiceId(null)}
-          onUpdate={() => {
-            setSelectedServiceId(null);
-            fetchServices();
-          }}
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          closeOnClick
+          pauseOnHover
+          draggable
         />
-      )}
-    </div>
+
+        {selectedServiceId && (
+          <ServiceEditModal
+            id={selectedServiceId}
+            onClose={() => setSelectedServiceId(null)}
+            onUpdate={() => {
+              setSelectedServiceId(null);
+              fetchServices();
+            }}
+          />
+        )}
+      </div>
+    </RequireAdmin>
   );
 }
