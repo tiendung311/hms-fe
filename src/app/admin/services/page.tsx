@@ -8,6 +8,7 @@ import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import ServiceEditModal from "@/app/components/admin/services/ServiceEditModal";
 import { ToastContainer } from "react-toastify";
+import { useFetchWithAuth } from "@/app/utils/api";
 
 interface Service {
   id: number;
@@ -17,6 +18,8 @@ interface Service {
 }
 
 export default function ServiceManage() {
+  const fetchWithAuth = useFetchWithAuth();
+
   const [services, setServices] = useState<Service[]>([]);
   const [selectedServiceId, setSelectedServiceId] = useState<number | null>(
     null
@@ -24,7 +27,7 @@ export default function ServiceManage() {
 
   const fetchServices = async () => {
     try {
-      const response = await fetch(
+      const response = await fetchWithAuth(
         "http://localhost:8080/api/admin/room-type-services"
       );
       if (!response.ok) throw new Error("Failed to fetch data");
@@ -37,7 +40,7 @@ export default function ServiceManage() {
 
   useEffect(() => {
     fetchServices();
-  }, []);
+  }, [fetchWithAuth]);
 
   return (
     <div className={styles.dashboardContainer}>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import styles from "./TransactionEditModal.module.css";
 import { toast, ToastContainer } from "react-toastify";
+import { useFetchWithAuth } from "@/app/utils/api";
 
 interface TransactionEditModalProps {
   isOpen: boolean;
@@ -28,6 +29,8 @@ export default function TransactionEditModal({
   transactionDetail,
   onUpdate,
 }: TransactionEditModalProps) {
+  const fetchWithAuth = useFetchWithAuth();
+
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>(
     transactionDetail.paymentMethod
   );
@@ -37,7 +40,7 @@ export default function TransactionEditModal({
 
   const handleUpdateTransaction = async () => {
     try {
-      const response = await fetch(
+      const response = await fetchWithAuth(
         `http://localhost:8080/api/admin/payments/${transactionDetail.transactionId}`,
         {
           method: "PUT",
@@ -79,7 +82,7 @@ export default function TransactionEditModal({
       const transactionId = transactionDetail.transactionId;
 
       // Gọi API POST không có body, mà truyền bookingId dưới dạng query param
-      const response = await fetch(
+      const response = await fetchWithAuth(
         `http://localhost:8080/api/payments/create-link?transactionId=${transactionId}`,
         {
           method: "POST",

@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import AdminPagination from "../AdminPagination";
 import ConfirmDeleteModal from "@/app/components/ConfirmDeleteModal";
 import { ToastContainer, toast } from "react-toastify";
+import { useFetchWithAuth } from "@/app/utils/api";
 
 interface Customer {
   id: number;
@@ -25,6 +26,8 @@ const FILTER_OPTIONS = [
 type FilterKey = "fullName" | "email";
 
 export default function CustomerManage() {
+  const fetchWithAuth = useFetchWithAuth();
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchFilter, setSearchFilter] = useState<FilterKey>("fullName"); // Mặc định tìm theo Họ tên
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -38,9 +41,9 @@ export default function CustomerManage() {
   const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
 
   useEffect(() => {
-    const fetchServices = async () => {
+    const fetchCustomers = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchWithAuth(
           "http://localhost:8080/api/admin/customers"
         );
         if (!response.ok) throw new Error("Failed to fetch data");
@@ -48,12 +51,12 @@ export default function CustomerManage() {
         setCustomers(data);
         setFilteredCustomers(data);
       } catch (error) {
-        console.error("Error fetching services:", error);
+        console.error("Error fetching customers:", error);
       }
     };
 
-    fetchServices();
-  }, []);
+    fetchCustomers();
+  }, [fetchWithAuth]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -99,12 +102,14 @@ export default function CustomerManage() {
     if (!selectedCustomerEmail) return;
 
     try {
-      await fetch(
+      const response = await fetchWithAuth(
         `http://localhost:8080/api/admin/customers/${selectedCustomerEmail}`,
         {
           method: "DELETE",
         }
       );
+
+      if (!response.ok) throw new Error("Xóa khách hàng thất bại");
 
       setCustomers((prev) =>
         prev.filter((c) => c.email !== selectedCustomerEmail)

@@ -15,6 +15,7 @@ import styles from "./style.module.css";
 import { toast } from "react-toastify";
 import BookingDetailModal from "@/app/components/admin/bookings/BookingDetailModal";
 import BookingCreateModal from "@/app/components/admin/bookings/BookingCreateModal";
+import { useFetchWithAuth } from "@/app/utils/api";
 
 const getStatusStyle = (status: string) => {
   switch (status) {
@@ -57,6 +58,13 @@ interface BookingDetail {
 const PAGE_SIZE = 10;
 
 export default function BookingManage() {
+  const fetchWithAuth = useFetchWithAuth();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -68,7 +76,9 @@ export default function BookingManage() {
 
   const fetchBookings = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/admin/bookings");
+      const response = await fetchWithAuth(
+        "http://localhost:8080/api/admin/bookings"
+      );
       if (!response.ok) throw new Error("Failed to fetch bookings");
       const data = await response.json();
       setBookings(data);
@@ -86,7 +96,7 @@ export default function BookingManage() {
   useEffect(() => {
     const fetchBookingStatuses = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchWithAuth(
           "http://localhost:8080/api/bookings/status"
         );
         if (!response.ok) throw new Error("Failed to fetch booking statuses");
@@ -96,9 +106,8 @@ export default function BookingManage() {
         console.error("Error fetching booking statuses:", error);
       }
     };
-
     fetchBookingStatuses();
-  }, []);
+  }, [fetchWithAuth]);
 
   const [selectedBooking, setSelectedBooking] = useState<BookingDetail | null>(
     null
@@ -108,7 +117,9 @@ export default function BookingManage() {
 
   const handleViewDetail = async (id: number, editable: boolean) => {
     try {
-      const res = await fetch(`http://localhost:8080/api/admin/bookings/${id}`);
+      const res = await fetchWithAuth(
+        `http://localhost:8080/api/admin/bookings/${id}`
+      );
       if (!res.ok) throw new Error("Không thể lấy chi tiết đặt phòng");
       const data = await res.json();
       setSelectedBooking(data);
@@ -164,6 +175,33 @@ export default function BookingManage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, statusFilter, fromDate, toDate]);
+
+  if (!isMounted) {
+    return (
+      <div style={{ textAlign: "center", padding: "20px" }}>
+        <div className="loader"></div>
+        <style jsx>{`
+          .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--main-blue);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+          }
+          @keyframes spin {
+            0% {
+              transform: rotate(0deg);
+            }
+            100% {
+              transform: rotate(360deg);
+            }
+          }
+        `}</style>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.dashboardContainer}>

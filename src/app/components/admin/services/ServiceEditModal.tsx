@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import styles from "./ServiceEditModal.module.css";
+import { useFetchWithAuth } from "@/app/utils/api";
 
 interface ServiceEditModalProps {
   id: number;
@@ -17,6 +18,8 @@ export default function ServiceEditModal({
   onClose,
   onUpdate,
 }: ServiceEditModalProps) {
+  const fetchWithAuth = useFetchWithAuth();
+
   const [roomType, setRoomType] = useState("");
   const [availableAmenities, setAvailableAmenities] = useState<string[]>([]);
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
@@ -27,7 +30,7 @@ export default function ServiceEditModal({
 
     const fetchData = async () => {
       try {
-        const res = await fetch(
+        const res = await fetchWithAuth(
           `http://localhost:8080/api/admin/room-type-services/${id}`
         );
         if (!res.ok)
@@ -67,11 +70,14 @@ export default function ServiceEditModal({
 
   const handleUpdate = async () => {
     try {
-      await fetch(`http://localhost:8080/api/admin/room-type-services/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ services: selectedAmenities }),
-      });
+      await fetchWithAuth(
+        `http://localhost:8080/api/admin/room-type-services/${id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ services: selectedAmenities }),
+        }
+      );
       toast.success("Cập nhật thành công!");
       setTimeout(() => {
         onClose();

@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import AdminPagination from "../AdminPagination";
 import { toast } from "react-toastify";
 import TransactionEditModal from "@/app/components/admin/transactions/TransactionEditModal";
+import { useFetchWithAuth } from "@/app/utils/api";
 
 interface Transaction {
   transactionId: number;
@@ -38,6 +39,8 @@ interface TransactionDetail {
 const PAGE_SIZE = 10;
 
 export default function TransactionManage() {
+  const fetchWithAuth = useFetchWithAuth();
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
   const [paymentFilter, setPaymentFilter] = useState<string>("");
@@ -46,7 +49,9 @@ export default function TransactionManage() {
 
   const fetchTransactions = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/admin/payments");
+      const response = await fetchWithAuth(
+        "http://localhost:8080/api/admin/payments"
+      );
       const data = await response.json();
       setTransactions(data);
     } catch (error) {
@@ -56,7 +61,7 @@ export default function TransactionManage() {
 
   useEffect(() => {
     fetchTransactions();
-  }, []);
+  }, [fetchWithAuth]);
 
   // payment status: Chờ, Thành công, Thất bại, Hoàn tiền
   const [paymentStatuses, setPaymentStatuses] = useState<string[]>([]);
@@ -64,7 +69,7 @@ export default function TransactionManage() {
   useEffect(() => {
     const fetchPaymentStatuses = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchWithAuth(
           "http://localhost:8080/api/payments/status"
         );
         const data = await response.json();
@@ -83,7 +88,7 @@ export default function TransactionManage() {
   useEffect(() => {
     const fetchPaymentMethods = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchWithAuth(
           "http://localhost:8080/api/payments/method"
         );
         const data = await response.json();
@@ -94,7 +99,7 @@ export default function TransactionManage() {
     };
 
     fetchPaymentMethods();
-  }, []);
+  }, [fetchWithAuth]);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
 
@@ -187,7 +192,7 @@ export default function TransactionManage() {
 
   const handleViewDetail = async (id: number) => {
     try {
-      const response = await fetch(
+      const response = await fetchWithAuth(
         `http://localhost:8080/api/admin/payments/${id}`
       );
       const data = await response.json();

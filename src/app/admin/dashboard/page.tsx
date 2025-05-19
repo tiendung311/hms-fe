@@ -19,6 +19,7 @@ import {
   Legend,
   Title,
 } from "chart.js";
+import { useFetchWithAuth } from "@/app/utils/api";
 Chart.register(ArcElement, PieController, Tooltip, Legend, Title);
 
 type Booking = {
@@ -30,27 +31,41 @@ type Booking = {
 };
 
 export default function Dashboard() {
+  const fetchWithAuth = useFetchWithAuth();
+
   const [totalRevenue, setTotalRevenue] = useState<number>(0);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/admin/total-amount/success")
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchTotalRevenue = async () => {
+      try {
+        const res = await fetchWithAuth(
+          "http://localhost:8080/api/admin/total-amount/success"
+        );
+        const data = await res.json();
         setTotalRevenue(data);
-      })
-      .catch((err) => console.error("Lỗi lấy tổng doanh thu:", err));
-  }, []);
+      } catch (err) {
+        console.error("Lỗi lấy tổng doanh thu:", err);
+      }
+    };
+    fetchTotalRevenue();
+  }, [fetchWithAuth]);
 
   const [monthlyRevenue, setMonthlyRevenue] = useState<number>(0);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/admin/total-amount/month/now")
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchMonthlyRevenue = async () => {
+      try {
+        const res = await fetchWithAuth(
+          "http://localhost:8080/api/admin/total-amount/month/now"
+        );
+        const data = await res.json();
         setMonthlyRevenue(data);
-      })
-      .catch((err) => console.error("Lỗi lấy doanh thu tháng:", err));
-  }, []);
+      } catch (err) {
+        console.error("Lỗi lấy doanh thu tháng:", err);
+      }
+    };
+    fetchMonthlyRevenue();
+  }, [fetchWithAuth]);
 
   const formatCurrency = (value: number) => {
     return value.toLocaleString("vi-VN") + "₫";
@@ -59,24 +74,33 @@ export default function Dashboard() {
   const [totalUsers, setTotalUsers] = useState<number>(0);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/admin/total-users")
-      .then((res) => res.json())
-      .then((data) => {
-        setTotalUsers(data);
-      })
-      .catch((err) => console.error("Lỗi lấy tổng người dùng:", err));
-  }, []);
+    const fetchTotalUsers = async () => {
+      const res = await fetchWithAuth(
+        "http://localhost:8080/api/admin/total-users"
+      );
+      const data = await res.json();
+      setTotalUsers(data);
+    };
+
+    fetchTotalUsers();
+  }, [fetchWithAuth]);
 
   const [totalRooms, setTotalRooms] = useState<number>(0);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/admin/total-rooms")
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchTotalRooms = async () => {
+      try {
+        const res = await fetchWithAuth(
+          "http://localhost:8080/api/admin/total-rooms"
+        );
+        const data = await res.json();
         setTotalRooms(data);
-      })
-      .catch((err) => console.error("Lỗi lấy tổng phòng:", err));
-  }, []);
+      } catch (err) {
+        console.error("Lỗi lấy tổng phòng:", err);
+      }
+    };
+    fetchTotalRooms();
+  }, [fetchWithAuth]);
 
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
@@ -84,18 +108,19 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/admin/bookings");
+        const res = await fetchWithAuth(
+          "http://localhost:8080/api/admin/bookings"
+        );
         if (!res.ok) throw new Error("Failed to fetch bookings");
         const data = await res.json();
         setAllBookings(data);
-        setBookings(data.slice(0, 5)); // lấy 5 bản ghi đầu tiên
+        setBookings(data.slice(0, 5));
       } catch (err) {
         console.error("Lỗi lấy danh sách booking:", err);
       }
     };
-
     fetchBookings();
-  }, []);
+  }, [fetchWithAuth]);
 
   const getStatusClass = (status: string) => {
     switch (status) {
@@ -118,9 +143,12 @@ export default function Dashboard() {
   const [activities, setActivities] = useState<string[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/admin/activity-log")
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchActivityLog = async () => {
+      try {
+        const res = await fetchWithAuth(
+          "http://localhost:8080/api/admin/activity-log"
+        );
+        const data = await res.json();
         if (Array.isArray(data)) {
           setActivities(data);
         } else if (Array.isArray(data.activities)) {
@@ -129,12 +157,13 @@ export default function Dashboard() {
           console.error("Dữ liệu không đúng định dạng:", data);
           setActivities([]);
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Lỗi lấy thông báo:", err);
         setActivities([]);
-      });
-  }, []);
+      }
+    };
+    fetchActivityLog();
+  }, [fetchWithAuth]);
 
   const chartRef = useRef<HTMLCanvasElement | null>(null);
 

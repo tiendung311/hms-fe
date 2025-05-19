@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import styles from "./BookingDetailModal.module.css";
 import { toast, ToastContainer } from "react-toastify";
+import { useFetchWithAuth } from "@/app/utils/api";
 
 interface BookingDetailModalProps {
   isOpen: boolean;
@@ -29,6 +30,8 @@ export default function BookingDetailModal({
   isEditable = false,
   onUpdate,
 }: BookingDetailModalProps) {
+  const fetchWithAuth = useFetchWithAuth();
+
   const toInputDate = (dateString: string): string => {
     if (!dateString.includes("/")) return dateString;
     const [day, month, year] = dateString.split("/");
@@ -48,7 +51,7 @@ export default function BookingDetailModal({
 
   useEffect(() => {
     if (isEditable) {
-      fetch(
+      fetchWithAuth(
         `http://localhost:8080/api/admin/rooms/available?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`
       )
         .then((res) => res.json())
@@ -60,7 +63,13 @@ export default function BookingDetailModal({
         })
         .catch((err) => console.error("Failed to fetch room numbers", err));
     }
-  }, [isEditable, bookingDetail.roomNumber, checkInDate, checkOutDate]);
+  }, [
+    isEditable,
+    bookingDetail.roomNumber,
+    checkInDate,
+    checkOutDate,
+    fetchWithAuth,
+  ]);
 
   const [totalPrice, setTotalPrice] = useState<number>(
     bookingDetail.totalPrice
@@ -86,7 +95,7 @@ export default function BookingDetailModal({
     const timeout = setTimeout(() => {
       if (selectedRoom && checkInDate && checkOutDate) {
         setLoadingPrice(true);
-        fetch(
+        fetchWithAuth(
           `http://localhost:8080/api/admin/bookings/calculate-price?roomNumber=${selectedRoom}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`
         )
           .then((res) => {
@@ -113,6 +122,7 @@ export default function BookingDetailModal({
     bookingDetail.checkInDate,
     bookingDetail.checkOutDate,
     bookingDetail.roomNumber,
+    fetchWithAuth,
   ]);
 
   const handleSaveChanges = async () => {
@@ -147,7 +157,7 @@ export default function BookingDetailModal({
     };
 
     try {
-      const res = await fetch(
+      const res = await fetchWithAuth(
         `http://localhost:8080/api/admin/bookings/${bookingDetail.bookingId}`,
         {
           method: "PUT",

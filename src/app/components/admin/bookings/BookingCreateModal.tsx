@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./BookingCreateModal.module.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useFetchWithAuth } from "@/app/utils/api";
 
 interface BookingCreateModalProps {
   onClose: () => void;
@@ -12,6 +13,8 @@ const BookingCreateModal: React.FC<BookingCreateModalProps> = ({
   onClose,
   onUpdate,
 }) => {
+  const fetchWithAuth = useFetchWithAuth();
+
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [roomNumber, setRoomNumber] = useState("");
@@ -43,7 +46,7 @@ const BookingCreateModal: React.FC<BookingCreateModalProps> = ({
   // Hàm generate loại phòng
   useEffect(() => {
     if (roomNumber) {
-      fetch(`http://localhost:8080/api/admin/rooms/${roomNumber}`)
+      fetchWithAuth(`http://localhost:8080/api/admin/rooms/${roomNumber}`)
         .then((res) => res.json())
         .then((data) => {
           console.log("API response:", data);
@@ -54,14 +57,14 @@ const BookingCreateModal: React.FC<BookingCreateModalProps> = ({
           setRoomType("Chưa có thông tin");
         });
     }
-  }, [roomNumber]);
+  }, [roomNumber, fetchWithAuth]);
 
   // Hàm tính giá
   useEffect(() => {
     if (roomNumber && checkInDate && checkOutDate) {
       const timeout = setTimeout(() => {
         setLoadingPrice(true);
-        fetch(
+        fetchWithAuth(
           `http://localhost:8080/api/admin/bookings/calculate-price?roomNumber=${roomNumber}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`
         )
           .then((res) => {
@@ -80,13 +83,13 @@ const BookingCreateModal: React.FC<BookingCreateModalProps> = ({
 
       return () => clearTimeout(timeout);
     }
-  }, [roomNumber, checkInDate, checkOutDate]);
+  }, [roomNumber, checkInDate, checkOutDate, fetchWithAuth]);
 
   const [roomNumbers, setRoomNumbers] = useState<string[]>([]);
 
   useEffect(() => {
     if (checkInDate && checkOutDate) {
-      fetch(
+      fetchWithAuth(
         `http://localhost:8080/api/admin/rooms/available?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`
       )
         .then((res) => res.json())
@@ -95,7 +98,7 @@ const BookingCreateModal: React.FC<BookingCreateModalProps> = ({
         })
         .catch((err) => console.error("Failed to fetch available rooms", err));
     }
-  }, [checkInDate, checkOutDate]);
+  }, [checkInDate, checkOutDate, fetchWithAuth]);
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -108,19 +111,22 @@ const BookingCreateModal: React.FC<BookingCreateModalProps> = ({
       totalAmount: totalPrice,
     });
 
-    const response = await fetch("http://localhost:8080/api/admin/bookings", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        roomNumber,
-        checkInDate,
-        checkOutDate,
-        totalAmount: totalPrice,
-      }),
-    });
+    const response = await fetchWithAuth(
+      "http://localhost:8080/api/admin/bookings",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          roomNumber,
+          checkInDate,
+          checkOutDate,
+          totalAmount: totalPrice,
+        }),
+      }
+    );
 
     const contentType = response.headers.get("Content-Type") || "";
 

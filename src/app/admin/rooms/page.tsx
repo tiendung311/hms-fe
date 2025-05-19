@@ -13,6 +13,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./style.module.css";
 import { ToastContainer, toast } from "react-toastify";
+import { useFetchWithAuth } from "@/app/utils/api";
 
 interface Room {
   roomNumber: string;
@@ -24,6 +25,8 @@ interface Room {
 const PAGE_SIZE = 10;
 
 export default function RoomManage() {
+  const fetchWithAuth = useFetchWithAuth();
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
   const [roomTypeFilter, setRoomTypeFilter] = useState<string>("");
@@ -35,25 +38,28 @@ export default function RoomManage() {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/admin/rooms");
+        const response = await fetchWithAuth(
+          "http://localhost:8080/api/admin/rooms"
+        );
         if (!response.ok) throw new Error("Failed to fetch data");
         const data = await response.json();
         setRooms(data);
-        console.log("Rooms data:", data);
       } catch (error) {
-        console.error("Error fetching services:", error);
+        console.error("Error fetching rooms:", error);
       }
     };
 
     fetchRooms();
-  }, []);
+  }, [fetchWithAuth]);
 
   const [roomStatuses, setRoomStatuses] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchRoomStatuses = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/rooms/status");
+        const response = await fetchWithAuth(
+          "http://localhost:8080/api/rooms/status"
+        );
         if (!response.ok) throw new Error("Failed to fetch room statuses");
         const data = await response.json();
         setRoomStatuses(data);
@@ -63,14 +69,14 @@ export default function RoomManage() {
     };
 
     fetchRoomStatuses();
-  }, []);
+  }, [fetchWithAuth]);
 
   const [services, setServices] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchWithAuth(
           "http://localhost:8080/api/services/names"
         );
         if (!response.ok) throw new Error("Failed to fetch services");
@@ -82,14 +88,16 @@ export default function RoomManage() {
     };
 
     fetchServices();
-  }, []);
+  }, [fetchWithAuth]);
 
   const [roomTypes, setRoomTypes] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchRoomTypes = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/room-types");
+        const response = await fetchWithAuth(
+          "http://localhost:8080/api/room-types"
+        );
         if (!response.ok) throw new Error("Failed to fetch room types");
         const data = await response.json();
         setRoomTypes(data);
@@ -99,7 +107,7 @@ export default function RoomManage() {
     };
 
     fetchRoomTypes();
-  }, []);
+  }, [fetchWithAuth]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -178,7 +186,7 @@ export default function RoomManage() {
 
   const toggleRoomMaintenance = async (roomNumber: string) => {
     try {
-      const response = await fetch(
+      const response = await fetchWithAuth(
         `http://localhost:8080/api/admin/rooms/${roomNumber}/toggle-maintenance`,
         {
           method: "PUT",

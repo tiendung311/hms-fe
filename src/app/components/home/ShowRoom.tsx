@@ -20,9 +20,18 @@ export default function ShowRoom() {
       try {
         const res = await fetch("http://localhost:8080/api/room-cards");
         const data = await res.json();
-        setRooms(data);
+
+        if (Array.isArray(data)) {
+          setRooms(data);
+        } else if (Array.isArray(data.rooms)) {
+          setRooms(data.rooms);
+        } else {
+          console.error("Unexpected response format:", data);
+          setRooms([]);
+        }
       } catch (error) {
         console.error("Error fetching room data:", error);
+        setRooms([]);
       }
     };
 
