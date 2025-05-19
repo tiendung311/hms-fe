@@ -41,32 +41,53 @@ export default function TransactionEditModal({
 
   const handleUpdateTransaction = async () => {
     try {
-      const response = await fetchWithAuth(
-        `http://localhost:8080/api/admin/payments/${transactionDetail.transactionId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            paymentMethod: selectedPaymentMethod,
-            paymentStatus: selectedPaymentStatus,
-          }),
-        }
-      );
+      if (selectedPaymentStatus === "Hoàn tiền") {
+        // Gọi API hoàn tiền
+        const refundResponse = await fetchWithAuth(
+          `http://localhost:8080/api/admin/payments/${transactionDetail.transactionId}/refund`,
+          {
+            method: "POST",
+          }
+        );
 
-      if (!response.ok) {
-        throw new Error("Failed to update transaction");
+        if (!refundResponse.ok) {
+          const errMsg = await refundResponse.text();
+          throw new Error(errMsg || "Hoàn tiền thất bại");
+        }
+
+        toast.success("Hoàn tiền thành công!");
+      } else {
+        // Gọi API cập nhật trạng thái và phương thức thanh toán bình thường
+        const response = await fetchWithAuth(
+          `http://localhost:8080/api/admin/payments/${transactionDetail.transactionId}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              paymentMethod: selectedPaymentMethod,
+              paymentStatus: selectedPaymentStatus,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Cập nhật giao dịch thất bại");
+        }
+
+        toast.success("Cập nhật thành công!");
       }
 
-      toast.success("Cập nhật thành công!");
       setTimeout(() => {
         onClose();
       }, 2000);
       onUpdate();
     } catch (error) {
       console.error("Error updating transaction:", error);
-      toast.error("Cập nhật thất bại!");
+      toast.error(
+        error instanceof Error ? error.message : "Cập nhật thất bại!"
+      );
     }
   };
 

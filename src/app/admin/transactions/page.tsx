@@ -160,7 +160,7 @@ export default function TransactionManage() {
       case "Thất bại":
         return { backgroundColor: "var(--main-red)", color: "white" };
       case "Hoàn tiền":
-        return { backgroundColor: "orange", color: "white" };
+        return { backgroundColor: "grey", color: "white" };
       default:
         return {};
     }
