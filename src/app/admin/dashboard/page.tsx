@@ -21,6 +21,7 @@ import {
 } from "chart.js";
 import { useFetchWithAuth } from "@/app/utils/api";
 import RequireAdmin from "@/app/components/RequireAdmin";
+import { useAuth } from "@clerk/nextjs";
 Chart.register(ArcElement, PieController, Tooltip, Legend, Title);
 
 type Booking = {
@@ -33,10 +34,13 @@ type Booking = {
 
 export default function Dashboard() {
   const fetchWithAuth = useFetchWithAuth();
+  const { isLoaded, userId } = useAuth();
 
   const [totalRevenue, setTotalRevenue] = useState<number>(0);
 
   useEffect(() => {
+    if (!isLoaded || !userId) return;
+
     const fetchTotalRevenue = async () => {
       try {
         const res = await fetchWithAuth(
@@ -49,11 +53,13 @@ export default function Dashboard() {
       }
     };
     fetchTotalRevenue();
-  }, [fetchWithAuth]);
+  }, [fetchWithAuth, isLoaded, userId]);
 
   const [monthlyRevenue, setMonthlyRevenue] = useState<number>(0);
 
   useEffect(() => {
+    if (!isLoaded || !userId) return;
+
     const fetchMonthlyRevenue = async () => {
       try {
         const res = await fetchWithAuth(
@@ -66,7 +72,7 @@ export default function Dashboard() {
       }
     };
     fetchMonthlyRevenue();
-  }, [fetchWithAuth]);
+  }, [fetchWithAuth, isLoaded, userId]);
 
   const formatCurrency = (value: number) => {
     return value.toLocaleString("vi-VN") + "₫";
@@ -75,6 +81,8 @@ export default function Dashboard() {
   const [totalUsers, setTotalUsers] = useState<number>(0);
 
   useEffect(() => {
+    if (!isLoaded || !userId) return;
+
     const fetchTotalUsers = async () => {
       const res = await fetchWithAuth(
         "http://localhost:8080/api/admin/total-users"
@@ -84,11 +92,13 @@ export default function Dashboard() {
     };
 
     fetchTotalUsers();
-  }, [fetchWithAuth]);
+  }, [fetchWithAuth, isLoaded, userId]);
 
   const [totalRooms, setTotalRooms] = useState<number>(0);
 
   useEffect(() => {
+    if (!isLoaded || !userId) return;
+
     const fetchTotalRooms = async () => {
       try {
         const res = await fetchWithAuth(
@@ -101,12 +111,14 @@ export default function Dashboard() {
       }
     };
     fetchTotalRooms();
-  }, [fetchWithAuth]);
+  }, [fetchWithAuth, isLoaded, userId]);
 
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
+    if (!isLoaded || !userId) return;
+
     const fetchBookings = async () => {
       try {
         const res = await fetchWithAuth(
@@ -121,7 +133,7 @@ export default function Dashboard() {
       }
     };
     fetchBookings();
-  }, [fetchWithAuth]);
+  }, [fetchWithAuth, isLoaded, userId]);
 
   const getStatusClass = (status: string) => {
     switch (status) {
@@ -144,6 +156,8 @@ export default function Dashboard() {
   const [activities, setActivities] = useState<string[]>([]);
 
   useEffect(() => {
+    if (!isLoaded || !userId) return;
+
     const fetchActivityLog = async () => {
       try {
         const res = await fetchWithAuth(
@@ -164,7 +178,7 @@ export default function Dashboard() {
       }
     };
     fetchActivityLog();
-  }, [fetchWithAuth]);
+  }, [fetchWithAuth, isLoaded, userId]);
 
   const chartRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -225,58 +239,77 @@ export default function Dashboard() {
   useEffect(() => {
     if (!chartRef2.current) return;
 
-    // Dữ liệu mẫu: doanh thu 6 tháng gần đây
-    const labels = [
-      "Tháng 1",
-      "Tháng 2",
-      "Tháng 3",
-      "Tháng 4",
-      "Tháng 5",
-      "Tháng 6",
-    ];
-    const data = [4, 3, 4, 5, 3, 6];
+    const fetchRoomTypeCounts = async () => {
+      try {
+        const res = await fetchWithAuth(
+          "http://localhost:8080/api/room-types/count"
+        );
+        const data = await res.json();
 
-    const chart = new Chart(chartRef2.current, {
-      type: "pie",
-      data: {
-        labels,
-        datasets: [
-          {
-            label: "Doanh thu theo tháng (triệu)",
-            data,
-            backgroundColor: [
-              "#4dc9f6",
-              "#f67019",
-              "#f53794",
-              "#537bc4",
-              "#acc236",
-              "#166a8f",
+        if (!Array.isArray(data)) {
+          console.error("Dữ liệu không hợp lệ từ API room-types/count", data);
+          return;
+        }
+
+        const labels = data.map((item) => item.roomTypeName);
+        const roomCounts = data.map((item) => item.totalRooms);
+
+        const chart = new Chart(chartRef2.current!, {
+          type: "pie",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "Tổng số phòng theo loại",
+                data: roomCounts,
+                backgroundColor: [
+                  "#4dc9f6",
+                  "#f67019",
+                  "#f53794",
+                  "#537bc4",
+                  "#acc236",
+                  "#166a8f",
+                ],
+              },
             ],
           },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            display: true,
-            position: "bottom",
-          },
-          title: {
-            display: true,
-            text: "Doanh thu các tháng 2025",
-            font: {
-              size: 18,
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                display: true,
+                position: "bottom",
+              },
+              title: {
+                display: true,
+                text: "Thống kê loại phòng",
+                font: {
+                  size: 18,
+                },
+              },
             },
           },
-        },
-      },
-    });
+        });
+
+        // Cleanup
+        return () => {
+          chart.destroy();
+        };
+      } catch (error) {
+        console.error("Lỗi khi fetch room-type counts:", error);
+      }
+    };
+
+    const cleanupPromise = fetchRoomTypeCounts();
 
     return () => {
-      chart.destroy();
+      cleanupPromise.then((cleanup) => {
+        if (typeof cleanup === "function") cleanup();
+      });
     };
-  }, []);
+  }, [fetchWithAuth]);
+
+  if (!isLoaded || typeof window === "undefined") return null;
 
   return (
     <RequireAdmin>
