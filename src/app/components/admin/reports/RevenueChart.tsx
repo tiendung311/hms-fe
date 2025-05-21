@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import {
   ResponsiveContainer,
@@ -18,44 +20,37 @@ interface RevenueChartProps {
 }
 
 interface RevenueData {
-  date: string;
-  revenue: number;
+  month: string;
+  netRevenue: number;
 }
-
-const generateRevenueData = (): RevenueData[] => {
-  // Danh sách tháng từ 11/2024 đến 05/2025
-  const months = [
-    "2024-11",
-    "2024-12",
-    "2025-01",
-    "2025-02",
-    "2025-03",
-    "2025-04",
-    "2025-05",
-  ];
-
-  // Phân bổ doanh thu sao cho tổng = 24 triệu VND
-  const revenues = [
-    3000000, 3000000, 4000000, 2000000, 4000000, 4000000, 4000000,
-  ]; // Tổng = 24 triệu
-
-  return months.map((month, index) => ({
-    date: month,
-    revenue: revenues[index],
-  }));
-};
 
 const RevenueChart: React.FC<RevenueChartProps> = ({ fromDate, toDate }) => {
   const [data, setData] = useState<RevenueData[]>([]);
 
   useEffect(() => {
-    const generatedData = generateRevenueData();
-    setData(generatedData);
-  }, []);
+    async function fetchMonthlyRevenue() {
+      try {
+        if (!fromDate || !toDate) return;
 
-  const filteredData = data.filter((entry) => {
-    return entry.date >= fromDate && entry.date <= toDate;
-  });
+        const res = await fetch(
+          `http://localhost:8080/api/payments/monthly-net-revenue?from=${fromDate}&to=${toDate}`
+        );
+        const result = await res.json();
+
+        if (Array.isArray(result)) {
+          setData(result);
+        } else {
+          console.warn("Unexpected API response:", result);
+          setData([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch monthly revenue:", error);
+        setData([]);
+      }
+    }
+
+    fetchMonthlyRevenue();
+  }, [fromDate, toDate]);
 
   const formatNumber = (number: number) => {
     return number.toLocaleString("vi-VN");
@@ -71,9 +66,9 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ fromDate, toDate }) => {
         </h3>
 
         <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={filteredData}>
+          <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
+            <XAxis dataKey="month" />
             <YAxis
               tickFormatter={formatNumber}
               style={{ fontSize: "0.7rem" }}
@@ -88,7 +83,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ fromDate, toDate }) => {
                 },
               ]}
             />
-            <Bar dataKey="revenue" fill="var(--main-blue)" />
+            <Bar dataKey="netRevenue" fill="var(--main-blue)" />
           </BarChart>
         </ResponsiveContainer>
       </div>

@@ -4,6 +4,7 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import styles from "./BookingDetail.module.css";
 import { useState } from "react";
 import RatingOverlay from "./RatingOverlay";
+import { ToastContainer, toast } from "react-toastify";
 
 const getStatusStyle = (status: string) => {
   const statusStyles: Record<
@@ -26,6 +27,7 @@ const getStatusStyle = (status: string) => {
 
 export type BookingDetailProps = {
   booking: {
+    bookingId: number;
     roomType: string;
     roomNumber: string;
     amenities: string[];
@@ -45,6 +47,37 @@ export default function BookingDetail({ booking, onBack }: BookingDetailProps) {
   } | null>(null);
 
   const isReviewable = booking.status === "Trả phòng";
+  const isCancelable =
+    booking.status === "Chờ" || booking.status === "Xác nhận";
+
+  const handleCancelBooking = async () => {
+    const confirm = window.confirm("Bạn có chắc muốn hủy đặt phòng?");
+    if (!confirm) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/bookings/${booking.bookingId}/cancel`,
+        {
+          method: "PUT",
+        }
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        const message = data.message || "Có lỗi xảy ra khi hủy đặt phòng.";
+        toast.error(message);
+        return;
+      }
+
+      toast.success("Hủy phòng thành công! Vui lòng kiểm tra email.");
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
+    } catch (error) {
+      console.error("Error canceling booking:", error);
+      toast.error("Đã xảy ra lỗi mạng khi hủy đặt phòng. Vui lòng thử lại.");
+    }
+  };
 
   return (
     <div className={styles.bookingContainer}>
@@ -102,13 +135,20 @@ export default function BookingDetail({ booking, onBack }: BookingDetailProps) {
               initialComment={ratingData?.comment || ""}
             />
           )}
-          <Button
-            variant="warning"
-            onClick={() => setShowRating(true)}
-            disabled={!isReviewable}
-          >
-            Đánh giá
-          </Button>
+          {!isCancelable && (
+            <Button
+              variant="warning"
+              onClick={() => setShowRating(true)}
+              disabled={!isReviewable}
+            >
+              Đánh giá
+            </Button>
+          )}
+          {isCancelable && (
+            <Button variant="danger" onClick={handleCancelBooking}>
+              Hủy đặt phòng
+            </Button>
+          )}
           <Button variant="secondary" onClick={onBack} disabled={showRating}>
             <FontAwesomeIcon
               icon={faArrowLeft}
@@ -135,6 +175,15 @@ export default function BookingDetail({ booking, onBack }: BookingDetailProps) {
           </div>
         ) : null}
       </div>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+      />
     </div>
   );
 }

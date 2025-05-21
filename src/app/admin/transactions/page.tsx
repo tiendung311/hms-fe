@@ -161,6 +161,8 @@ export default function TransactionManage() {
         return { backgroundColor: "var(--main-red)", color: "white" };
       case "Hoàn tiền":
         return { backgroundColor: "grey", color: "white" };
+      case "Hủy":
+        return { backgroundColor: "var(--main-blue)", color: "white" };
       default:
         return {};
     }

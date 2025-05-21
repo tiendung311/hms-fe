@@ -27,7 +27,6 @@ export default function Activity() {
   const [selectedBooking, setSelectedBooking] = useState<
     BookingDetailProps["booking"] | null
   >(null);
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,6 +53,7 @@ export default function Activity() {
 
   const handleSelectBooking = (booking: Booking) => {
     const convertedBooking = {
+      bookingId: booking.bookingId,
       roomType: booking.roomType,
       roomNumber: booking.roomNumber,
       amenities: booking.services,
@@ -64,13 +64,6 @@ export default function Activity() {
     };
     setSelectedBooking(convertedBooking);
   };
-
-  const currentBookings = bookings.filter(({ bookingStatus }) =>
-    ["Chờ", "Xác nhận", "Nhận phòng"].includes(bookingStatus)
-  );
-  const pastBookings = bookings.filter(({ bookingStatus }) =>
-    ["Trả phòng", "Hủy phòng"].includes(bookingStatus)
-  );
 
   if (loading) return <p>Đang tải dữ liệu...</p>;
 
@@ -86,8 +79,8 @@ export default function Activity() {
       ) : (
         <>
           <h1 className={styles.heading}>Hoạt động</h1>
-          {currentBookings.length > 0 ? (
-            currentBookings.map((booking) => (
+          {bookings.length > 0 ? (
+            bookings.map((booking) => (
               <BookingActivity
                 key={booking.bookingId}
                 roomType={booking.roomType}
@@ -97,22 +90,7 @@ export default function Activity() {
               />
             ))
           ) : (
-            <p className={styles.noti}>Không có hoạt động hiện tại</p>
-          )}
-
-          <h1 className={styles.heading}>Gần đây</h1>
-          {pastBookings.length > 0 ? (
-            pastBookings.map((booking) => (
-              <BookingActivity
-                key={booking.bookingId}
-                roomType={booking.roomType}
-                status={booking.bookingStatus}
-                time={`${booking.checkInDate} - ${booking.checkOutDate}`}
-                onClick={() => handleSelectBooking(booking)}
-              />
-            ))
-          ) : (
-            <p className={styles.noti}>Không có hoạt động nào gần đây</p>
+            <p className={styles.noti}>Bạn chưa có hoạt động đặt phòng nào</p>
           )}
         </>
       )}
