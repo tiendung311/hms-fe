@@ -359,10 +359,10 @@ export default function Dashboard() {
 
             <div className={styles.chartContainer}>
               <div className={styles.chartBox}>
-                <canvas ref={chartRef}></canvas>
+                <canvas ref={chartRef2}></canvas>
               </div>
               <div className={styles.chartBox}>
-                <canvas ref={chartRef2}></canvas>
+                <canvas ref={chartRef}></canvas>
               </div>
             </div>
 

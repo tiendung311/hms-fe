@@ -143,7 +143,7 @@ export default function RoomDetail({
           <div className={styles.terms}>
             <h4>Điều khoản đặt phòng</h4>
             <ul>
-              <li>Không hoàn tiền khi hủy trong vòng 24 giờ trước check-in.</li>
+              <li>Không hoàn tiền khi hủy trong vòng 48 giờ trước check-in.</li>
               <li>
                 Giờ nhận phòng: sau 12:00, trả phòng trước 12:00 ngày rời đi.
               </li>
